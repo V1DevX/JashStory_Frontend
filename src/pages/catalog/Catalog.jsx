@@ -7,7 +7,6 @@ import search from "../../assets/searchIcon.svg";
 import { ClipLoader } from "react-spinners";
 import { useLanguage } from "../../context/LanguageContext";
 import { API_URL } from "../../config/api";
-console.log(API_URL)
 
 const Catalog = () => {
 	const [cards, setCards] = useState([]);
