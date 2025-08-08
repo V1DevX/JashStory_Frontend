@@ -1,0 +1,38 @@
+/* * {
+    margin: 0;
+    padding: 0;
+}
+.article-container {
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.article-container p img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+}
+
+.article-container p strong
+{
+    text-align: center;
+    display: block;
+}
+
+.article-container p b {
+    font-size: 27px;
+    font-weight: 400;
+    display: block;
+    text-align: center;
+}
+
+/* .article-container p:nth-child(1) {
+    font-size: 27px;   
+    font-weight: 400; 
+    text-align: center;
+} */
+
+.article-container {
+    
+}

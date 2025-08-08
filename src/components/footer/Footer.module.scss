@@ -1,0 +1,62 @@
+.footer {
+    background-color: #7f7f7f;
+    color: #ffffff;
+    padding: 2.5rem 0;
+    position: relative; 
+    z-index: 1; 
+    overflow: hidden;
+  
+    .contact {
+      position: absolute;
+      top: -25%;
+      left: -5%;
+      z-index: -1; 
+      font-size: 450px;
+      color: #999999; //rgba(104, 103, 103, 0.355);
+      font-weight: 900;
+      user-select: none;
+    }
+  
+    h3 {
+      font-size: 1.125rem;
+      font-weight: bold;
+    }
+  
+    p, ul, li {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+  }
+  
+  .iconContainer {
+    gap: 1rem;
+  }
+  
+  .icon {
+    font-size: 1.5rem;
+    
+    &:hover {
+      color: #ccc;
+    }
+  }
+  
+  .instagram {
+    &:hover {
+      transition: all 0.4s ease-in-out;
+      color: #E1306C;
+    }
+  }
+  
+  .whatsapp {
+    &:hover {
+      transition: all 0.4s ease-in-out;
+      color: #25D366;
+    }
+  }
+  
+  .telegram {
+    &:hover {
+      transition: all 0.4s ease-in-out;
+      color: #0088cc;
+    }
+  }
