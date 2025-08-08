@@ -5,6 +5,7 @@ import Footer from "../../components/footer/Footer";
 import { ClipLoader } from "react-spinners";
 import "./ArticleStyles.css";
 import { useLanguage } from "../../context/LanguageContext";
+import { API_URL } from "../../config/api";
 
 const ArticlePage = () => {
   const { id } = useParams();
@@ -61,7 +62,7 @@ const ArticlePage = () => {
 
         setLoading(true);
         const response = await fetch(
-          `http://localhost:5000/api/v1/posts/${id}/${language}`,
+          `${API_URL}/posts/${id}/${language}`,
           {
             headers: {
               // 'Accept-Language': language

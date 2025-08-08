@@ -6,6 +6,8 @@ import Footer from "../../components/footer/Footer";
 import search from "../../assets/searchIcon.svg";
 import { ClipLoader } from "react-spinners";
 import { useLanguage } from "../../context/LanguageContext";
+import { API_URL } from "../../config/api";
+console.log(API_URL)
 
 const Catalog = () => {
 	const [cards, setCards] = useState([]);
@@ -25,7 +27,7 @@ const Catalog = () => {
 			setLoading(true)
 			try {
 				const response = await fetch(
-					`http://localhost:5000/api/v1/posts/${language}?page=${page}`,
+					`${API_URL}/posts/${language}?page=${page}`,
 					{
 						headers: {
 							'Content-Type': 'application/json',
