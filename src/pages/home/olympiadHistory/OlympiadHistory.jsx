@@ -16,6 +16,39 @@ const OlympiadHistory = () => {
     navigate("/catalog")
   }
 
+  const translations = {
+    olympiadHistory: {
+      en: "Olympiad History",
+      ru: "Олимпиадная История",
+      kg: "Олимпиаданын тарыхы"
+    },
+    text: {
+      en: <>
+            Here you will find fascinating tests on world and national
+            history, advanced level articles and many other useful <br/> materials
+            for successful preparation for Olympiads and various tests, as
+            well as for in-depth study of historical events.
+          </>,
+      ru: <>
+            Здесь вы найдете увлекательные тесты по мировой и отечественной
+            истории, статьи углубленного уровня и множество других полезных <br />
+            материалов для успешной подготовки к олимпиадам и разным тестам, а
+            также для глубокого изучения исторических событий.
+          </>,
+      kg: <>
+            Бул жерден сиз дүйнөлүк жана улуттук тарых боюнча кызыктуу 
+            тесттерди, алдыңкы деңгээлдеги макалаларды жана олимпиадаларга жана ар кандай 
+            <br />тесттерге ийгиликтүү даярдануу үчүн, ошондой эле тарыхый 
+            окуяларды терең изилдөө үчүн көптөгөн пайдалуу материалдарды таба аласыз.
+          </>
+    },
+    allArticles: {
+      en: "All articles",
+      ru: "Все статьи",
+      kg: "Бардык макалалар"
+    }
+  }
+
   return (
     <div className="flex flex-col px-5 md:px-10 items-center justify-center bg-olymp-bg bg-cover bg-center h-[400px] md:h-[500px] text-white">
       <div
@@ -25,27 +58,13 @@ const OlympiadHistory = () => {
         transform ${inView ? "opacity-100" : "opacity-0"}`}
       >
         <h2 className="font-unbounded font-medium text-center text-xl md:text-4xl xl:text-5xl">
-          {language === "en" ? "Olympiad History" : "Олимпиадная История"}
+          {translations.olympiadHistory[language]}
         </h2>
         <p className="mt-2 font-sf font-light text-[15px] xl:text-base lg:font-normal text-center">
-          {language === "en" ? (
-            <>
-              Here you will find fascinating tests on world and national
-              history, advanced level articles and many other useful <br/> materials
-              for successful preparation for Olympiads and various tests, as
-              well as for in-depth study of historical events.
-            </>
-          ) : (
-            <>
-              Здесь вы найдете увлекательные тесты по мировой и отечественной
-              истории, статьи углубленного уровня и множество других полезных <br />
-              материалов для успешной подготовки к олимпиадам и разным тестам, а
-              также для глубокого изучения исторических событий.
-            </>
-          )}
+          {translations.text[language]}
         </p>
         <button onClick={handleCatalogClick} className="mt-10 font-sf w-[200px] md:w-[234px] font-medium md:text-xl text-white px-[15px] py-[8px] border-white border-2 rounded-[24px]">
-          {language === "en" ? "All articles" : "Все статьи"}
+          {translations.allArticles[language]}
         </button>
       </div>
     </div>

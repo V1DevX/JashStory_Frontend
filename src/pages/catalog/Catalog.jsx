@@ -35,7 +35,7 @@ const Catalog = () => {
 					}
 				);
 				const resJson = await response.json();
-				console.log(resJson.data)
+
 				allCards = [...allCards, ...resJson.data]  
 				if (resJson?.next) {
 					page++;

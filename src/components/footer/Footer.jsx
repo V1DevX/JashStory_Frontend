@@ -7,6 +7,47 @@ import { useLanguage } from "../../context/LanguageContext";
 const Footer = () => {
   const { language } = useLanguage();
 
+  const translations = {
+    contactUs: {
+      en: <>
+            Contact us in any <br />
+            convenient way
+          </>,
+      ru: <>
+            Свяжитесь с нами любым <br />
+            удобным способом
+          </>,
+      kg: <>
+            Биз менен каалаган ыңгайлуу<br /> жол менен байланышыңыз
+          </>
+    },
+    contacts: {
+      en: "Contacts",
+      ru: "Контакты",
+      kg: "Байланыштар"
+    },
+    bishkekCity: {
+      en: "Bishkek city",
+      ru: "г. Бишкек",
+      kg: "Бишкек шаары"
+    },
+    forClients: {
+      en: "For clients",
+      ru: "Для клиентов",
+      kg: "Кардарлар үчүн"
+    },
+    aboutUs: {
+      en: "About Us",
+      ru: "О нас",
+      kg: "Биз жөнүндө"
+    },
+    olympiads: {
+      en: "Olympiads",
+      ru: "Олимпиады",
+      kg: "Олимпиадалар"
+    }
+  }
+
   return (
     <footer
       className={`flex flex-col items-center md:pt-[140px] md:h-[450px] ${styles.footer}`}
@@ -19,18 +60,7 @@ const Footer = () => {
             Jash Story
           </h3>
           <p className="mt-2">
-            {language === "en" ? (
-              <>
-                Contact us in any <br />
-                convenient way
-              </>
-            ) : (
-              <>
-                Свяжитесь с нами любым
-                <br />
-                удобным способом
-              </>
-            )}
+            {translations.contactUs[language]}
           </p>
           <div className={`${styles.iconContainer} flex mt-4`}>
             <a
@@ -59,18 +89,18 @@ const Footer = () => {
 
         <div className="flex flex-col items-center">
           <h3 className="text-lg font-bold">
-            {language === "en" ? "Contacts" : "Контакты"}
+            {translations.contacts[language]}
           </h3>
           <p className="mt-2">+996 220 140 041</p>
           <p className="mt-2">jash_story@gmail.com</p>
           <p className="mt-2">
-            {language === "en" ? "Bishkek city" : "г. Бишкек"}
+            {translations.bishkekCity[language]}
           </p>
         </div>
 
         <div className="flex flex-col items-center">
           <h3 className="text-lg font-bold">
-            {language === "en" ? "For clients" : "Для клиентов"}
+            {translations.forClients[language]}
           </h3>
           <ul className="mt-2 space-y-2 text-center">
             <li>
@@ -78,7 +108,7 @@ const Footer = () => {
                 href="/about"
                 className="relative after:content-[''] after:block after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
               >
-                {language === "en" ? "About Us" : "О нас"}
+                {translations.aboutUs[language]}
               </a>
             </li>
             <li>
@@ -86,7 +116,7 @@ const Footer = () => {
                 href="/about#prev-olympiads"
                 className="relative after:content-[''] after:block after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
               >
-                {language === "en" ? "Olympiads" : "Олимпиады"}
+                {translations.olympiads[language]}
               </a>
             </li>
             {/* <li>

@@ -16,7 +16,7 @@ const Home = () => {
       <Header />
       <MainInfo />
       <Resources />
-      <Articles />
+      {/* <Articles /> */}
       <OlympiadHistory />
       {/* <BestArticles /> */}
       <Footer />

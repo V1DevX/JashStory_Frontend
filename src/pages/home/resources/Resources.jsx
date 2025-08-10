@@ -19,54 +19,77 @@ const Resources = () => {
     threshold: 0.1,
   });
 
+  const translations = {
+    completeResources: {
+      en: <>
+            COMPLETE RESOURCES <br /> FOR{" "}
+            <span className="text-[#CC67F8]">SUCCESS</span> IN{" "}
+            <span className="text-[#CC67F8]">OLYMPIADS</span>
+          </>,
+      ru: <>
+            ПОЛНЫЕ РЕСУРСЫ <br /> ДЛЯ{" "}
+            <span className="text-[#CC67F8]">ПОБЕДЫ</span> В{" "}
+            <span className="text-[#CC67F8]">ОЛИМПИАДАХ</span>
+          </>,
+      kg: <>
+            <span className="text-[#CC67F8]">ОЛИМПИАДАЛАРДЫ ЖАТУУ</span> {" "}
+            УЧУН ТОЛУК РЕСУРСТАР
+          </>
+    },
+    text: {
+      en: <>
+            Jash Story offers unique materials and resources to prepare for
+            school history olympiads. We carefully select books, articles, and
+            study guides that help participants gain deeper insights into the
+            history of Kyrgyzstan and world history. Our materials are
+            tailored to the students' level and aligned with olympiad
+            standards. 
+              <br /> <br />
+            Our website features exclusive resources that not only assist in
+            preparation but also inspire a love for history. We strive to make
+            learning simple and engaging by providing all the necessary tools
+            for success.
+          </>,
+      ru: <>
+            Jash Story предлагает уникальные материалы и ресурсы для
+            подготовки к школьным олимпиадам по истории. Мы тщательно отбираем
+            книги, статьи и учебные пособия, которые помогут участникам глубже
+            изучить историю Кыргызстана и мировую историю. Наши материалы
+            разработаны с учетом уровня подготовки школьников и ориентированы
+            на олимпиадные стандарты. 
+              <br /> <br /> 
+            На нашем сайтепредставлены эксклюзивные ресурсы, которые не только
+            помогают в подготовке, но и вдохновляют на изучение истории. 
+            Мы стремимся сделать обучение простым и увлекательным, предоставляя 
+            все необходимые инструменты для достижения успеха.
+          </>,
+      kg: <>
+            Jash Story мектеп тарыхы боюнча олимпиадаларга даярдануу үчүн 
+            уникалдуу материалдарды жана ресурстарды сунуштайт. Биз 
+            катышуучуларга Кыргызстандын тарыхын жана дүйнөлүк тарыхты 
+            тереңирээк изилдөөгө жардам бере турган китептерди, макалаларды
+            жана окуу колдонмолорун кылдаттык менен тандап алабыз. Биздин 
+            материалдар мектеп окуучуларынын даярдык деңгээлин эске алуу 
+            менен иштелип чыккан жана олимпиадалык стандарттарга багытталган.
+              <br /> <br /> 
+            Биздин сайт сизге даярданууга жардам бербестен, тарыхты изилдөөгө 
+            шыктандырган эксклюзивдүү ресурстарды камтыйт. Биз сизге ийгиликке 
+            жетүү үчүн керектүү бардык куралдар менен камсыз кылуу менен бирге 
+            окууну жөнөкөй жана кызыктуу кылууга аракет кылабыз.
+          </>
+    }
+  }
+
   return (
     <div className="bg-GrayBg py-10">
       <div className="grid lg:grid-cols-2 gap-10 mx-4 md:mx-10">
         <div className="flex flex-col justify-center">
           <p className="font-unbounded text-3xl md:text-4xl xl:text-5xl font-medium text-white leading-tight">
-            {language === "en" ? (
-              <>
-                COMPLETE RESOURCES <br /> FOR{" "}
-                <span className="text-[#CC67F8]">SUCCESS</span> IN{" "}
-                <span className="text-[#CC67F8]">OLYMPIADS</span>
-              </>
-            ) : (
-              <>
-                ПОЛНЫЕ РЕСУРСЫ <br /> ДЛЯ{" "}
-                <span className="text-[#CC67F8]">ПОБЕДЫ</span> В{" "}
-                <span className="text-[#CC67F8]">ОЛИМПИАДАХ</span>
-              </>
-            )}
+            {translations.completeResources[language]}
           </p>
         </div>
         <p className="font-sf text-white font-light text-base xl:text-lg">
-          {language === "en" ? (
-            <>
-              Jash Story offers unique materials and resources to prepare for
-              school history olympiads. We carefully select books, articles, and
-              study guides that help participants gain deeper insights into the
-              history of Kyrgyzstan and world history. Our materials are
-              tailored to the students' level and aligned with olympiad
-              standards. <br /> <br />
-              Our website features exclusive resources that not only assist in
-              preparation but also inspire a love for history. We strive to make
-              learning simple and engaging by providing all the necessary tools
-              for success.
-            </>
-          ) : (
-            <>
-              Jash Story предлагает уникальные материалы и ресурсы для
-              подготовки к школьным олимпиадам по истории. Мы тщательно отбираем
-              книги, статьи и учебные пособия, которые помогут участникам глубже
-              изучить историю Кыргызстана и мировую историю. Наши материалы
-              разработаны с учетом уровня подготовки школьников и ориентированы
-              на олимпиадные стандарты. <br /> <br /> На нашем сайте
-              представлены эксклюзивные ресурсы, которые не только помогают в
-              подготовке, но и вдохновляют на изучение истории. Мы стремимся
-              сделать обучение простым и увлекательным, предоставляя все
-              необходимые инструменты для достижения успеха.
-            </>
-          )}
+          {translations.text[language]}
         </p>
 
         <div

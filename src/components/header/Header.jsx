@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import logoblack from '../../assets/logoblack.svg';
 import { useLanguage } from '../../context/LanguageContext'
 
-const Header = () => {
+const Header = (props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
+  const headerClassName = props.className || "flex justify-between my-7 md:my-10 px-4 md:px-10 gap-20 items-center"
   
+
   useEffect(() => {
     const storedLanguage = localStorage.getItem('language');
     if (storedLanguage) {
@@ -33,23 +35,55 @@ const Header = () => {
     setLanguage(newLanguage);
     localStorage.setItem('language', newLanguage);
   };
-  return (
-    <header className="flex justify-between my-7 md:my-10 px-4 md:px-10 gap-20 items-center">
-      <a href="/" className="flex items-center gap-1 font-unbounded text-[24px] font-bold">
-        <img src={logoblack} alt="Logo" />
-        <span className="hidden sm:inline">Jash Story</span>
-      </a>
 
-      <div className="flex items-center xl:hidden space-x-4">
-        {/* Language Dropdown */}
-        <select
+  const translations = {
+    worldHistory: {
+      en: "World History",
+      ru: "Мировая История",
+      kg: "Дүйнөлүк тарых"
+    },
+    historyOfKyrgyzstan: {
+      en: "History of Kyrgyzstan",
+      ru: "История Кыргызстана",
+      kg: "Кыргызстандын тарыхы"
+    },
+    olympiadHistory: {
+      en: "Olympiad History",
+      ru: "Олимпиадная История",
+      kg: "Олимпиаданын тарыхы"
+    },
+    aboutUs: {
+      en: "About Us",
+      ru: "О нас",
+      kg: "Биз жөнүндө"
+    },
+    signIn: {
+      en: "Sign in",
+      ru: "Войти",
+      kg: "Кирүү"
+    }
+  }
+  const languageSelector = <select
+          name='languageSelector'
           value={language}
           onChange={handleLanguageChange}
           className="text-[#333335] bg-white border border-gray-300 rounded-[45px] px-4 py-1 text-lg focus:outline-none hover:cursor-pointer"
         >
           <option value="en">English</option>
           <option value="ru">Русский</option>
+          <option value="kg">Кыргызча</option>
         </select>
+
+  return (
+    <header className={headerClassName}>
+      <a href="/" className="flex items-center gap-1 font-unbounded text-[24px] font-bold">
+        {!props.className ? <img src={logoblack} alt="Logo" /> : <></>}
+        <span className="hidden sm:inline">Jash Story</span>
+      </a>
+
+      <div className="flex items-center xl:hidden space-x-4">
+        {/* Language Dropdown */}
+        {languageSelector}
 
         {/* Burger Menu Button */}
         <button onClick={toggleMenu} className="text-3xl">
@@ -59,20 +93,20 @@ const Header = () => {
 
       <nav aria-label="Main Navigation" className="hidden xl:flex font-sf">
         <ul className="flex items-center gap-12 md:gap-8 hover:cursor-pointer text-[#393939] font-light">
-          <li className="hover:text-[18px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "World History" : "Мировая История"}
+          <li className="hover:text-[18px] transition-all duration-300 ease-in-out text-center">
+          {translations.worldHistory[language]}
             
           </li>
-          <li className="hover:text-[18px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "History of Kyrgyzstan" : "История Кыргызстана"}
+          <li className="hover:text-[18px] transition-all duration-300 ease-in-out text-center">
+          {translations.historyOfKyrgyzstan[language]}
+
+          </li>
+          <li className="hover:text-[18px] transition-all duration-300 ease-in-out text-center">
+          {translations.olympiadHistory[language]}
             
           </li>
-          <li className="hover:text-[18px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "Olympiad History" : "Олимпиадная История"}
-            
-          </li>
-          <li onClick={handleAboutClick} className="hover:text-[18px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "About Us" : "О нас"}
+          <li onClick={handleAboutClick} className="hover:text-[18px] transition-all duration-300 ease-in-out text-center">
+          {translations.aboutUs[language]}
 
           </li>
         </ul>
@@ -86,19 +120,19 @@ const Header = () => {
       >
         <ul className="flex flex-col items-center gap-4 py-4">
           <li className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "World History" : "Мировая История"}
+          {translations.worldHistory[language]}
             
           </li>
           <li className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "History of Kyrgyzstan" : "История Кыргызстана"}
+          {translations.historyOfKyrgyzstan[language]}
             
           </li>
           <li className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "Olympiad History" : "Олимпиадная История"}
+          {translations.olympiadHistory[language]}
             
           </li>
           <li onClick={handleAboutClick} className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {language === "en" ? "About Us" : "О нас"}
+          {translations.aboutUs[language]}
             
           </li>
         </ul>
@@ -106,21 +140,14 @@ const Header = () => {
 
       <div className="hidden xl:flex items-center space-x-4">
         {/* Language Dropdown */}
-        <select
-          value={language}
-          onChange={handleLanguageChange}
-          className="text-[#333335] bg-white border border-gray-300 rounded-[45px] px-4 py-1 text-lg focus:outline-none hover:cursor-pointer"
-        >
-          <option value="en">English</option>
-          <option value="ru">Русский</option>
-        </select>
+        {languageSelector}
 
         {/* Login Button */}
         <button
           onClick={handleLoginClick}
           className="text-white bg-[#333335] rounded-[45px] text-2xl px-[27px] py-[4px] hover:cursor-pointer hover:opacity-90 transition-all duration-300 ease-in-out"
         >
-          {language === "en" ? "Sign in" : "Войти"}
+          {translations.signIn[language]}
           
         </button>
       </div>
