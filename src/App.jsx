@@ -1,47 +1,58 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { RequireAuth } from './context/AuthContext';
 
-// Pages
+// 🏠	Pages
 import Home from "./pages/home/Home";
 import Catalog from "./pages/catalog/Catalog";
 import About from "./pages/about/About";
-import Login from "./pages/login/Login";
-import Registration from "./pages/registration/Registration";
+
+// 📒	Articles
 import ArticlePage from "./pages/article/ArticlePage";
 
-//  Admin
-// import AdminPage from "./pages/admin/AdminPage";
-// import PostList from "./pages/admin/pages/posts/PostList";
-// import PostView from "./pages/admin/pages/posts/PostView";
-// import PostEdit from "./pages/admin/pages/posts/PostEdit";
-// import PostCreate from "./pages/admin/pages/posts/PostCreate";
+// 🧑	User
+import Login from "./pages/login/Login";
+import User from "./pages/user/User";
 
-// Features
+// 🔒	Admin
+import AdminPage from "./pages/admin/AdminPage";
+
+// 🔩	Features
 import ScrollToTop from "./scrolltotop/ScrollToTop";
 
 const App = () => {
-  return (
-    <Router>
-      <ScrollToTop />
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="catalog" element={<Catalog />} />
-        <Route path="about" element={<About />} />
-        <Route path="login" element={<Login />} />
-        <Route path="registration" element={<Registration />} />
-        <Route path="article/:id" element={<ArticlePage />} />
+	return (
+		<Router>
+			<ScrollToTop />
+			<Routes>
+				{/* 🔹 Публичные маршруты */}
+				<Route index element={<Home />} />
+				<Route path="/catalog" element={<Catalog />} />
+				<Route path="/about" element={<About />} />
+				<Route path="/article/:id" element={<ArticlePage />} />
+				
+				<Route path="/login" element={<Login />}/>
+				<Route path="/register" element={<Login />}/>
 
-      </Routes>
-    </Router>
-  );
+
+				{/* 🔹 Закрытые маршруты */}
+				<Route element={<RequireAuth />}>
+					<Route path="/user/*" element={<User />} />
+					<Route path='/admin/*' element={<AdminPage />} />
+				</Route>
+
+				{/* 🔹 Undefined location */}
+				<Route path="*" element={
+					<div className="w-[100%] h-[100%] flex justify-center items-center">
+						<h1 className="text-[64px] font-[800] font-unbounded drop-shadow-[2px_4px_0px_rgba(123,0,255,1)]">
+							/404/
+						</h1>
+					</div>
+					} /> 
+			</Routes>
+		</Router>
+	);
 };
-//      <Route path="admin" element={<AdminPage />}>
-//        {/* <Route index element={<Dashboard />} /> */}
-//        <Route path="posts" element={<PostList />} >
-//          <Route path="create" element={<PostCreate />} />
-//          <Route path=":id" element={<PostView />} />
-//          <Route path=":id/edit" element={<PostEdit />} />
-//        </Route>
-//      </Route>
+
 export default App;
 
 

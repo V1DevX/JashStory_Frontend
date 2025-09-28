@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import logoblack from '../../assets/logoblack.svg';
 import { useLanguage } from '../../context/LanguageContext'
 
+
+
 const Header = (props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
@@ -17,6 +19,10 @@ const Header = (props) => {
   }, [setLanguage]);
 
   const navigate = useNavigate();
+
+  const handleHomeClick = () => {
+    navigate("/");
+  };
 
   const handleAboutClick = () => {
     navigate("/about");
@@ -76,12 +82,12 @@ const Header = (props) => {
 
   return (
     <header className={headerClassName}>
-      <a href="/" className="flex items-center gap-1 font-unbounded text-[24px] font-bold">
+      <a onClick={handleHomeClick} className="cursor-pointer flex items-center gap-1 font-unbounded text-[24px] font-bold">
         {!props.className ? <img src={logoblack} alt="Logo" /> : <></>}
         <span className="hidden sm:inline">Jash Story</span>
       </a>
 
-      <div className="flex items-center xl:hidden space-x-4">
+      <div className="flex items-center space-x-4">
         {/* Language Dropdown */}
         {languageSelector}
 
@@ -136,20 +142,6 @@ const Header = (props) => {
             
           </li>
         </ul>
-      </div>
-
-      <div className="hidden xl:flex items-center space-x-4">
-        {/* Language Dropdown */}
-        {languageSelector}
-
-        {/* Login Button */}
-        <button
-          onClick={handleLoginClick}
-          className="text-white bg-[#333335] rounded-[45px] text-2xl px-[27px] py-[4px] hover:cursor-pointer hover:opacity-90 transition-all duration-300 ease-in-out"
-        >
-          {translations.signIn[language]}
-          
-        </button>
       </div>
     </header>
   );

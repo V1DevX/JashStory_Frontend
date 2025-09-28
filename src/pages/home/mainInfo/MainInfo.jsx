@@ -14,7 +14,7 @@ const MainInfo = () => {
     heading: {
       en: "A nation that does not know its history deprives itself of its roots",
       ru: "Народ не знающий свою историю лишает себя корней",
-      kg: "Тарыхын билбеген эл өз тамырынан ажырайт"
+      kg: "Тарыхын билбеген эл ɵз тамырынан ажырайт"
     },
     viewCatalog: {
       en: "View catalog",
