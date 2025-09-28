@@ -3,5 +3,5 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    @apply flex flex-col items-center m-4 md:m-10 rounded-[20px];
+    @apply flex flex-col items-center m-4 md:m-6 rounded-[20px];
 }

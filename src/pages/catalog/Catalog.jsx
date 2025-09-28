@@ -98,8 +98,7 @@ const Catalog = () => {
 		return <p className="text-center text-lg text-red-500">{error}</p>;
 	}
 
-	return loading ? <Loader /> :
-	<>
+	return <>
 		<Header />
 			{/* Main div */}
 			<div className={style.mainDiv}>
@@ -123,11 +122,11 @@ const Catalog = () => {
 				</button>
 			</div>
 			<div className="m-4 md:m-10 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-5 xl:grid-cols-3 lg:gap-11">
-				{paginatedCards.map((card) => (
+				{loading ? <Loader /> : paginatedCards.map((card) => (
 					<Card
 						id={card._id}
 						key={card._id}
-						img={card.previewImage}
+						img={card.previewImage.url}
 						text={card[language]?.title || "card title"}
 						bgColor="bg-[#E5E5E5]"
 					/>

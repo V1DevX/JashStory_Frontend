@@ -394,7 +394,7 @@ const PostCreate = () => {
 			ru: formDataRef.current.ru,
 			en: formDataRef.current.en,
 			kg: formDataRef.current.kg,
-			previewImage: JSON.stringify(formDataRef.current.previewImage)
+			previewImage: formDataRef.current.previewImage
 		}).then(res => console.log(res))
 		.catch(err => console.error(err.message))
 	}
