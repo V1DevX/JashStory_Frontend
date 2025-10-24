@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import api from '../../../api';
+import api from '@/api';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import useDraftStore from "../../../stores/draftStore";
+import useDraftStore from "@/stores/draftStore";
 import * as Dialog from '@radix-ui/react-dialog';
 import { List, Save, Trash2, Plus } from "lucide-react";
 
