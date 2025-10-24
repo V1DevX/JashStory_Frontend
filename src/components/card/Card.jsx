@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Card = ({ id, img, text, bgColor = "bg-white" }) => {
   const navigate = useNavigate();

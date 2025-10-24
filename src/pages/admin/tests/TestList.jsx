@@ -20,11 +20,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
-	Table, TableBody, TableCell, 
-	TableHead, TableHeader, TableRow
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
 } from "@/components/ui/table";
 
-const PostList = () => {
+const TestList = () => {
 	const { language } = useLanguage();
 	const { user } = useAuth();
 	const postsPerPage = 5;
@@ -184,11 +188,12 @@ const PostList = () => {
 						<TableCell>-----</TableCell>
 						<TableCell>
 							<div className="flex gap-2">
-								<Link to={`/admin/posts/${post._id}/edit`}>
-									<Button variant="outline" size="sm" className="border-gray-600 dark:border-gray-600 text-gray-100 dark:text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-700">
+								{/* <Link to={`/admin/posts/${post._id}/edit`}> */}
+									{/* <Button variant="outline" size="sm" className="border-gray-600 dark:border-gray-600 text-gray-100 dark:text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-700">
 										<Edit className="w-4 h-4" />
-									</Button>
-								</Link>
+									</Button> */}
+									<button onClick={()=>{console.log(post)}}><Edit className="w-4 h-4" /></button>
+								{/* </Link> */}
 								<Button
 									variant="destructive"
 									size="sm"
@@ -239,4 +244,4 @@ const PostList = () => {
 	);
 };
 
-export default PostList;
+export default TestList;

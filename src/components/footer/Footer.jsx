@@ -1,8 +1,8 @@
 import React from "react";
-import styles from "./Footer.module.scss";
+import styles from "./Footer.module.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import logowhite from "../../assets/logowhite.svg";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Footer = () => {
   const { language } = useLanguage();

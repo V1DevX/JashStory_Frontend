@@ -4,7 +4,7 @@ import style from "./Catalog.module.css";
 import Card from "../../components/card/Card";
 import Footer from "../../components/footer/Footer";
 import search from "../../assets/searchIcon.svg";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 import { API_URL } from "../../config";
 import Loader from "../../components/loader/Loader";
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/Logo';
-import { useLanguage } from '../../context/LanguageContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 import Dropdown from '../Dropdown';
 
 const Header = ({className='', dark=false}) => {

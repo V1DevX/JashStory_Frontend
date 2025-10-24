@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import style from "./MainInfo.module.css";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const MainInfo = () => {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React from "react";
 import { ClipLoader } from "react-spinners";
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Loader = () => {
 	const { language } = useLanguage();

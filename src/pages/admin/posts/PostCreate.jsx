@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from '../../../api';
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const PostCreate = () => {
 	const formDataRef = useRef(
@@ -461,12 +461,12 @@ const PostCreate = () => {
 			</header>
 
 			{/* LANGUAGE */}
-			<div className="mb-[10px] grid grid-cols-3">
+			<div className=" grid grid-cols-3">
 				{["ru", "en", "kg"].map(lang => (
 					<button
 						key={lang}
 						onClick={() => updateAllData(lang)}
-						className={`px-[15%] text-[20px] font-[600] duration-200 ${
+						className={`w-full text-[20px] font-[600] duration-200 ${
 							currLang === lang ? 'bg-violet-800' : 'bg-gray-900 hover:bg-violet-950'
 						}`}
 					>

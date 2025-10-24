@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+	  "baseUrl": ".",
+	  "paths": {
+		// Алиас для папки src
+		"@/*": ["./src/*"] 
+	  }
+	}
+  }

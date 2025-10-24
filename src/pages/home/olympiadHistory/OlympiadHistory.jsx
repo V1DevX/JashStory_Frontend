@@ -1,6 +1,6 @@
 import React from "react";
 import { useInView } from "react-intersection-observer";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 
 const OlympiadHistory = () => {

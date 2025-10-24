@@ -9,7 +9,7 @@ import ramzan from "./pics/ramzan.svg";
 import bibinur from "./pics/bibinur.svg";
 import nurdin from "./pics/nurdin.svg";
 import sezimtal from "./pics/sezimtal.svg";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const Team = () => {
   const { language } = useLanguage();

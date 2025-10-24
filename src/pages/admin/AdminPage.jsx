@@ -9,6 +9,10 @@ import PostCreate from "./posts/PostCreate";
 // import PostView from "./pages/posts/PostView";
 // import PostEdit from "./pages/posts/PostEdit";
 
+//   	Tests
+import TestList from "./tests/TestList";
+import TestCreate from "./tests/TestCreate";
+
 // 👥	Users
 import UserList from "./users/UserList";
 
@@ -21,6 +25,10 @@ const AdminPage = () => {
 			<Route path="posts">
 				<Route index element={<PostList />}/>
 				<Route path="create" element={<PostCreate />} />
+			</Route>
+			<Route path="tests">
+				<Route index element={<TestList />}/>
+				<Route path="create" element={<TestCreate />} />
 			</Route>
 			<Route path="users">
 				<Route index element={<UserList />}/>

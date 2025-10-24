@@ -1,5 +1,5 @@
 import React from "react";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import prevolymp from '../../../assets/prevolymp1.jpeg';
 
 const PrevOlympiads = () => {

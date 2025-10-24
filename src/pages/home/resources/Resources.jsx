@@ -4,7 +4,7 @@ import img1 from "../../../assets/fallofrome.svg";
 import img2 from "../../../assets/napoleonwar.svg";
 import img3 from "../../../assets/europe.svg";
 import { useInView } from "react-intersection-observer";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const Resources = () => {
   const { language } = useLanguage();

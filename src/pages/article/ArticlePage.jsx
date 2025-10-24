@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import { ClipLoader } from "react-spinners";
-import Placeholder from 'react-bootstrap/Placeholder';
-import { useLanguage } from "../../context/LanguageContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 import { API_URL } from "../../config";
 
 const ArticlePage = () => {

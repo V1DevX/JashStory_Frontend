@@ -1,5 +1,5 @@
 import React from "react";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import img from "../../../assets/photoofall.jpg";
 
 const Project = () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Card from "../../../components/card/Card";
-import { useLanguage } from "../../../context/LanguageContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const Articles = () => {
   const { language } = useLanguage()

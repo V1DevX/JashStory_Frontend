@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { RequireAuth } from './context/AuthContext';
+import { RequireAuth } from './contexts/AuthContext';
 
 // 🏠	Pages
 import Home from "./pages/home/Home";
