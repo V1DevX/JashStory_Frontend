@@ -64,7 +64,7 @@ const Catalog = () => {
 
 	const filteredCards = cards.filter((card) =>
 		// {console.log(card);return card}
-		card[language]?.title.toLowerCase().includes(searchQuery.toLowerCase())
+		card?.title.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
@@ -126,8 +126,8 @@ const Catalog = () => {
 					<Card
 						id={card._id}
 						key={card._id}
-						img={card.previewImage.url}
-						text={card[language]?.title || "card title"}
+						img={card.previewImage?.url}
+						text={card?.title || "card title"}
 						bgColor="bg-[#E5E5E5]"
 					/>
 				))}

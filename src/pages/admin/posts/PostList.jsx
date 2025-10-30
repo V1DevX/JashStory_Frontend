@@ -1,242 +1,307 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../../api";
+import { Edit, Trash2, Search, Download, Plus, RefreshCw, EyeOff, Eye } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { API_URL } from "@/config";
-import { Link } from "react-router-dom";
-import { 
-	Edit, 
-	Trash2, 
-	Search, 
-	ChevronLeft, 
-	ChevronRight,
-	CirclePlus,
-	Calendar,
-	User,
-	BookType
-} from "lucide-react";
 
-// shadcn/ui components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { 
-	Table, TableBody, TableCell, 
-	TableHead, TableHeader, TableRow
-} from "@/components/ui/table";
+/*
+  Изменения:
+  - фикс bug: lang может быть undefined -> используем fallback
+  - добавил кнопку Refresh
+  - добавил toggle статуса Hidden <-> public/draft (через PATCH /posts/:id)
+  - перевод UI по lang
+  - edit ведёт на create?post=ID (открывается в PostCreate)
+*/
 
-const PostList = () => {
-	const { language } = useLanguage();
-	const { user } = useAuth();
-	const postsPerPage = 5;
-	// Post
-	const [ isLoading, setIsLoading ] = useState(true);
-	const [ posts, setPosts ] = useState([]);
+const UI = {
+  en: {
+    title: "Posts & Tests",
+    searchPlaceholder: "Search title or author",
+    all: "All",
+    public: "Public",
+    draft: "Draft",
+    hidden: "Hidden",
+    archived: "Archived",
+    recent: "Recent",
+    oldest: "Oldest",
+    export: "Export",
+    new: "New",
+    viewTests: "View",
+    noPosts: "No posts found",
+    deleteConfirm: (t) => `Delete post "${t}"? This action is irreversible.`,
+    publishSuccess: "Status updated",
+  },
+  ru: {
+    title: "Посты и Тесты",
+    searchPlaceholder: "Поиск по заголовку или автору",
+    all: "Все",
+    public: "Опубликовано",
+    draft: "Черновик",
+    hidden: "Скрыто",
+    archived: "Архив",
+    recent: "Сначала новые",
+    oldest: "Сначала старые",
+    export: "Экспорт",
+    new: "Новый",
+    viewTests: "Просмотр",
+    noPosts: "Посты не найдены",
+    deleteConfirm: (t) => `Удалить пост "${t}"? Это действие необратимо.`,
+    publishSuccess: "Статус обновлён",
+  },
+  kg: {
+    title: "Посттор & Тесттер",
+    searchPlaceholder: "Аталышын же авторун изде",
+    all: "Бардыгы",
+    public: "Жарыяланган",
+    draft: "Черновик",
+    hidden: "Жашырын",
+    archived: "Архив",
+    recent: "Жакында",
+    oldest: "Эски",
+    export: "Экспорт",
+    new: "Жаңы",
+    viewTests: "Көрүү",
+    noPosts: "Посттор табылган жок",
+    deleteConfirm: (t) => `Постту өчүрүү "${t}"? Бул иш-чара кайтпайт.`,
+    publishSuccess: "Статус жаңыртылды",
+  }
+}
 
-	const [ currentPage, setCurrentPage ] = useState(1);
-	const [ totalPages, setTotalPages ] = useState(0)
-	const [ searchQuery, setSearchQuery ] = useState("");
-	// const [ paginatedPosts, setPaginatedPosts ] = useState([])
+const StatusBadge = ({ status }) => {
+  const cls = status === "public" ? "bg-green-700" :
+              status === "draft" ? "bg-yellow-600" :
+              status === "hidden" ? "bg-gray-600" : "bg-gray-700";
+  return <span className={`text-xs px-2 py-1 rounded ${cls} text-white`}>{status}</span>
+}
 
-	const fetchAllData = async () => {
-		setIsLoading(true)
-		try {
-			const response = await fetch(
-				`${API_URL}/posts/${language}`
-				// {
-				// 	headers: {
-				// 		'Content-Type': 'application/json',
-				// 		// 'Accept-Language': language,
-				// 	},
-				// }
-			);
+export default function PostList() {
+  const [posts, setPosts] = useState([]);
+  const [tests, setTests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { lang } = useLanguage();
+  const labels = UI[lang] || UI.en;
 
-			const resJson = await response.json();
-			setPosts(resJson.data)
-		} catch (error) {
-			console.error("Error loading articles:", error);
-			setPosts([])
-		}
+  // UI
+  const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortDesc, setSortDesc] = useState(true);
 
-		setIsLoading(false);
-	};
-	useEffect(() => {
-		setIsLoading(true)
-		fetchAllData()
-	}, []);
+  const navigate = useNavigate();
 
-	// Фильтрация по поиску (useMemo для оптимизации)
-	// const filteredPosts = useMemo(() => {
-	// 	if(!isLoading) return []
-	// 	else {
-	// 		return posts.filter(post =>
-	// 			post.title.toLowerCase().includes(searchQuery.toLowerCase())
-	// 			// post.author.toLowerCase().includes(searchQuery.toLowerCase())
-	// 		);
-	// 	}
-	// }, [posts, searchQuery]);
+  const fetchList = async () => {
+    setLoading(true);
+    try {
+      // ensure lang fallback so we don't call /tests/undefined
+      const l = lang || "en";
 
-	// Пагинация
-	// useEffect(() => {
-	// 	setTotalPages(Math.ceil(filteredPosts.length / postsPerPage))
-	// 	setPaginatedPosts(filteredPosts.slice(
-	// 		(currentPage - 1) * postsPerPage,
-	// 		currentPage * postsPerPage
-	// 	))
-	// }, [filteredPosts])
-	
+      const [pRes, tRes] = await Promise.all([
+        api.get(`/posts/${l}`),    // backend expects lang param
+        api.get(`/tests/${l}`),
+      ]);
+      const postsData = pRes.data?.data || pRes.data || [];
+      const testsData = tRes.data?.data || tRes.data || [];
+      setPosts(postsData);
+      setTests(testsData);
+    } catch (e) {
+      console.error("Failed load posts/tests:", e);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-	// Обработчик удаления (с confirm)
-	const handleDelete = (id) => {
-		if (window.confirm(`Delete post ${id}?`)) {
-			setPosts(posts.filter(post => post.id !== id));
-		}
-	};
+  useEffect(() => {
+    fetchList();
+    // refetch when lang changes
+  }, [lang]);
 
-	// Badge для статуса (цвета по статусу)
-	const StatusBadge = ({ status }) => {
-		const colorMap = {
-			draft: 'default',
-			published: 'default',
-			archived: 'secondary',
-		};
-		const textMap = {
-			draft: 'Draft',
-			published: 'Published',
-			archived: 'Archived',
-		};
-		return (
-			<Badge variant={colorMap[status] || 'default'} className={
-			status === 'published' ? 'bg-green-900 text-green-100 border-green-700' :
-			status === 'draft' ? 'bg-gray-900 text-gray-100 border-gray-700' :
-			'bg-red-900 text-red-100 border-red-700'
-			}>
-				{textMap[status] || status}
-			</Badge>
-		);
-	};
+  // map tests by postId/_id for quick access
+  const testsByPost = useMemo(() => {
+    const map = new Map();
+    for (const t of tests) {
+      // test schema: _id is the post's id (shared id). keep fallbacks
+      const pid = t._id || t.postId || t.post || t.post_id;
+      if (!pid) continue;
+      if (!map.has(pid)) map.set(pid, []);
+      map.get(pid).push(t);
+    }
+    return map;
+  }, [tests]);
 
-	return (
-	<div className="flex-1 p-6 bg-gray-900 dark:bg-gray-900 text-gray-100 dark:text-gray-100 space-y-6">
-		{/* Header с поиском и кнопкой создания */}
-		<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-		<div className="flex items-center gap-2">
-			<BookType className="w-6 h-6 text-purple-400" />
-			<h1 className="text-2xl font-bold text-gray-100 dark:text-gray-100">Posts</h1>
-			<Badge className="bg-purple-900 text-purple-100 border-purple-700 ml-2">
-			{/* {filteredPosts.length} total */}111 total 
-			</Badge>
-		</div>
-		<Link to="/admin/posts/create">
-			<Button className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2">
-			<CirclePlus className="w-4 h-4" />
-			Create Post
-			</Button>
-		</Link>
-		</div>
+  const filtered = useMemo(() => {
+    const qlow = q.trim().toLowerCase();
+    return posts
+      .filter(p => {
+        if (statusFilter !== "all" && (p.status || "draft") !== statusFilter) return false;
+        if (!qlow) return true;
+        const title = (p.title || "").toLowerCase();
+        const author = (p.author?.name || p.author || "").toLowerCase();
+        return title.includes(qlow) || author.includes(qlow);
+      })
+      .sort((a,b) => {
+        const ta = new Date(a.createdAt || a.created_at || Date.now()).getTime();
+        const tb = new Date(b.createdAt || b.created_at || Date.now()).getTime();
+        return sortDesc ? tb - ta : ta - tb;
+      });
+  }, [posts, q, statusFilter, sortDesc]);
 
-		{/* Поиск */}
-		<div className="relative max-w-md">
-		<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-		<Input
-			placeholder="Search posts by title or author..."
-			value={searchQuery}
-			onChange={(e) => setSearchQuery(e.target.value)}
-			className="pl-9 bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border-gray-600 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500"
-		/>
-		</div>
+  const onEdit = (post) => {
+    // open PostCreate in edit mode
+    navigate(`create?post=${post._id || post.id}`);
+  }
 
+  const onDelete = async (post) => {
+    const title = post.title || 'Untitled';
+    const ok = window.confirm(labels.deleteConfirm(title));
+    if (!ok) return;
+    try {
+      setPosts(prev => prev.filter(p => (p._id || p.id) !== (post._id || post.id)));
+      await api.delete(`/posts/${post._id || post.id}`);
+    } catch (e) {
+      console.error("Delete failed:", e);
+      await fetchList();
+    }
+  }
 
-		<div className="rounded-md border border-gray-700 dark:border-gray-700 bg-gray-800 dark:bg-gray-800 overflow-hidden">
-			<Table>
-				<TableHeader>
-					<TableRow className="hover:bg-gray-700 dark:hover:bg-gray-700 border-b border-gray-700 dark:border-gray-700">
-						{['Title', 'Author', 'Date', 'Status', 'Actions'].map(head => (
-							<TableHead key={head} className="text-gray-100 dark:text-gray-100 font-medium">{head}</TableHead>
-						))}
-					</TableRow>
-				</TableHeader>
+  // toggle between hidden and previous (public/draft). For simplicity: if currently hidden -> set to 'public'
+  // otherwise set to 'hidden'
+  const toggleHidden = async (post) => {
+    const id = post._id || post.id;
+    const prev = post.status || "draft";
+    const newStatus = prev === "hidden" ? "public" : "hidden";
+    // optimistic
+    setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: newStatus } : p)));
+    try {
+      await api.patch(`/posts/${id}`, { status: newStatus });
+      // optional: show toast (omitted)
+    } catch (e) {
+      console.error("Status update failed", e);
+      await fetchList();
+    }
+  }
 
-				<TableBody>
-					{isLoading ? <TableRow><TableCell><i>Loading...</i></TableCell></TableRow> :
-					!posts ? <TableRow><TableCell><b>Error</b></TableCell></TableRow> : (
-					posts.map((post) => (
-					<TableRow key={post._id} className="hover:bg-gray-700 dark:hover:bg-gray-700 border-b border-gray-700 dark:border-gray-700">
-						{/* <TableCell className="text-gray-100 dark:text-gray-100 font-medium max-w-[50px]">{post._id}</TableCell> */}
-						<TableCell className="text-gray-100 dark:text-gray-100 max-w-xs truncate">
-							<div className="flex items-center gap-2">
-								<BookType className="w-4 h-4 text-purple-400" />
-								<span>{post.title}</span>
-							</div>
-						</TableCell>
-						<TableCell className="text-gray-300 dark:text-gray-300">
-							<div className="flex items-center gap-2">
-								<User className="w-4 h-4 text-gray-400" />
-								<span>{post.createdBy}</span>
-							</div>
-						</TableCell>
-						<TableCell className="text-gray-300 dark:text-gray-300">
-							<div className="flex items-center gap-2">
-								<Calendar className="w-4 h-4 text-gray-400" />
-								{/* <span>{post.createdAt}</span> */}
-							</div>
-						</TableCell>
-						{/* <TableCell><StatusBadge status={post.status} /></TableCell> */}
-						<TableCell>-----</TableCell>
-						<TableCell>
-							<div className="flex gap-2">
-								<Link to={`/admin/posts/${post._id}/edit`}>
-									<Button variant="outline" size="sm" className="border-gray-600 dark:border-gray-600 text-gray-100 dark:text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-700">
-										<Edit className="w-4 h-4" />
-									</Button>
-								</Link>
-								<Button
-									variant="destructive"
-									size="sm"
-									onClick={() => handleDelete(post._id)}
-									className="bg-red-900 hover:bg-red-800 text-red-100 border-red-700">
-									<Trash2 className="w-4 h-4" />
-								</Button>
-							</div>
-						</TableCell>
-					</TableRow>
-					)))}
-				</TableBody>
-			</Table>
-		</div>
-		
+  const exportCSV = () => {
+    const rows = [
+      ["id","title","author","date","status","tests_count","tests_ids"].join(",")
+    ];
+    for (const p of filtered) {
+      const id = p._id || p.id;
+      const title = `"${(p.title || "").replace(/"/g, '""')}"`;
+      const author = `"${(p.author?.name || p.author || "").replace(/"/g, '""')}"`;
+      const date = new Date(p.createdAt || p.created_at || Date.now()).toISOString();
+      const status = p.status || "draft";
+      const tlist = testsByPost.get(id) || [];
+      const tcount = tlist.length;
+      const tids = `"${tlist.map(t => t._id || t.id).join(";")}"`;
+      rows.push([id, title, author, date, status, tcount, tids].join(","));
+    }
+    const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `posts_export_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
 
-		{/* Пагинация */}
-		{!isLoading && totalPages > 1 && (
-		<div className="flex items-center justify-between">
-			<div className="text-sm text-gray-400 dark:text-gray-400">
-			Page {currentPage} of {totalPages}
-			</div>
-			<div className="flex gap-2">
-			<Button
-				variant="outline"
-				size="sm"
-				onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-				disabled={currentPage === 1}
-				className="border-gray-600 dark:border-gray-600 text-gray-100 dark:text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50"
-			>
-				<ChevronLeft className="w-4 h-4" />
-				Previous
-			</Button>
-			<Button
-				variant="outline"
-				size="sm"
-				onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-				disabled={currentPage === totalPages}
-				className="border-gray-600 dark:border-gray-600 text-gray-100 dark:text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-700 disabled:opacity-50"
-			>
-				Next
-				<ChevronRight className="w-4 h-4" />
-			</Button>
-			</div>
-		</div>
-		)}
-	</div>
-	);
-};
+  if (loading) return <div className="p-6 text-sm text-gray-400">Loading...</div>;
 
-export default PostList;
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">{labels.title}</h2>
+
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-gray-800 rounded px-2">
+            <Search className="text-gray-300" size={14}/>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder={labels.searchPlaceholder} className="bg-transparent outline-none px-2 py-1 text-sm w-64"/>
+          </div>
+
+          <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-gray-900 px-2 py-1 rounded text-sm">
+            <option value="all">{labels.all}</option>
+            <option value="public">{labels.public}</option>
+            <option value="draft">{labels.draft}</option>
+            <option value="hidden">{labels.hidden}</option>
+            <option value="archived">{labels.archived}</option>
+          </select>
+
+          <button onClick={()=>setSortDesc(s => !s)} className="px-3 py-1 bg-gray-800 rounded text-sm">{sortDesc ? labels.recent : labels.oldest}</button>
+
+          <button onClick={exportCSV} className="flex items-center gap-2 px-3 py-1 bg-violet-700 rounded text-sm">
+            <Download size={14}/> {labels.export}
+          </button>
+
+          <button onClick={fetchList} className="flex items-center gap-2 px-3 py-1 bg-gray-800 rounded text-sm">
+            <RefreshCw size={14}/> Refresh
+          </button>
+
+          <button onClick={()=>navigate("create")} className="flex items-center gap-2 px-3 py-1 bg-green-600 rounded text-sm">
+            <Plus size={14}/> {labels.new}
+          </button>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto bg-transparent">
+        <table className="w-full table-auto text-sm">
+          <thead>
+            <tr className="text-left text-xs text-gray-400 border-b border-gray-800">
+              <th className="p-2">Title</th>
+              <th className="p-2 w-40">Author</th>
+              <th className="p-2 w-36">Date</th>
+              <th className="p-2 w-28">Status</th>
+              <th className="p-2 w-40">Tests</th>
+              <th className="p-2 w-36 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(post => {
+              const id = post._id || post.id;
+              const tlist = testsByPost.get(id) || [];
+              return (
+                <tr key={id} className="border-b border-gray-800 hover:bg-gray-900">
+                  <td className="p-2">
+                    <div className="flex flex-col">
+                      <button onClick={()=>onEdit(post)} className="text-left text-sm font-medium hover:underline">{post.title || 'Untitled'}</button>
+                      <div className="text-xs text-gray-500">{(post.desc || "").slice(0, 120)}</div>
+                    </div>
+                  </td>
+                  <td className="p-2">{post.author?.name || post.author || (post.createdBy?.name) || "—"}</td>
+                  <td className="p-2">{new Date(post.createdAt || post.created_at || Date.now()).toLocaleString()}</td>
+                  <td className="p-2"><StatusBadge status={post.status || "draft"} /></td>
+                  <td className="p-2">
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm">{tlist.length} test{tlist.length === 1 ? "" : "s"}</div>
+                      {tlist.length > 0 && <div className="text-xs text-gray-400">[{(tlist[0].title || "").slice(0,20)}{tlist.length>1?` +${tlist.length-1}`:""}]</div>}
+                      <button onClick={() => navigate(`tests?post=${id}`)} className="text-xs text-violet-400 hover:underline">{labels.viewTests}</button>
+                    </div>
+                  </td>
+                  <td className="p-2 text-right">
+                    <div className="inline-flex gap-2">
+                      <button onClick={()=>onEdit(post)} title="Edit" className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700">
+                        <Edit size={14}/>
+                      </button>
+
+                      <button onClick={() => toggleHidden(post)} title={post.status === 'hidden' ? 'Unhide' : 'Hide'} className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700">
+                        {post.status === 'hidden' ? <Eye size={14}/> : <EyeOff size={14}/>}
+                      </button>
+
+                      <button onClick={()=>onDelete(post)} title="Delete" className="px-2 py-1 bg-red-700 rounded hover:bg-red-600">
+                        <Trash2 size={14}/>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={6} className="p-6 text-center text-gray-500">{labels.noPosts}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
