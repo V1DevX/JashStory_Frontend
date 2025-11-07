@@ -5,13 +5,12 @@ import Dashboard from "./Dashboard";
 
 // 📚	Posts
 import PostList from "./posts/PostList";
-import PostCreate from "./posts/PostCreate";
-// import PostView from "./pages/posts/PostView";
-// import PostEdit from "./pages/posts/PostEdit";
+import PostEditor from "./posts/PostEditor";
+// import PostView from "./posts/PostView"; // Dashboard: views, ratings, comments, etc.
 
 //   	Tests
 import TestList from "./tests/TestList";
-import TestCreate from "./tests/TestCreate";
+import TestEditor from "./tests/TestEditor";
 
 // 👥	Users
 import UserList from "./users/UserList";
@@ -24,11 +23,12 @@ const AdminPage = () => {
 			<Route path="dashboard" element={<Dashboard />}/>
 			<Route path="posts">
 				<Route index element={<PostList />}/>
-				<Route path="create" element={<PostCreate />} />
+				<Route path="editor" element={<PostEditor />} /> 
+				{/* TODO: path editor/:id */}
 			</Route>
 			<Route path="tests">
 				<Route index element={<TestList />}/>
-				<Route path="create" element={<TestCreate />} />
+				<Route path="editor/:id" element={<TestEditor />} />
 			</Route>
 			<Route path="users">
 				<Route index element={<UserList />}/>

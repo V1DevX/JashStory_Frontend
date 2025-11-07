@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,9 +11,17 @@ import {
 	CirclePlus,
 	CircleCheck,
 } from "lucide-react";
+import { useParams, useSearchParams } from "react-router-dom";
 
-const TestCreate = ({ postId }) => {
-	// const { user } = useAuth();
+const TestEditor = () => {
+	// TODO: Learn how to use React-Quary for data fetching and caching
+	// import { useQuery } from '@tanstack/react-query';
+	
+	const params = useParams();
+	const testIdRef = useRef(params.id || null);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const mode = searchParams.get("mode") || "create"; // create or edit
+
 	const [lang, setLang] = useState("ru");
 	const [idCount, setIdCount] = useState(2);
 	const [questions, setQuestions] = useState([{
@@ -21,7 +29,35 @@ const TestCreate = ({ postId }) => {
 		en: { question: "", options: [{ text: "", isCorrect: false }], desc: "" },
 		ru: { question: "", options: [{ text: "", isCorrect: false }], desc: "" },
 		kg: { question: "", options: [{ text: "", isCorrect: false }], desc: "" },
-	}]);
+	}]);	
+
+	useEffect(() => {
+		if (mode==="edit" && testIdRef.current) { // Fetch existing test data 
+			const fetchTest = async () => {
+
+				const link = `/tests/${testIdRef.current}`
+				const config = {
+					params: {
+						isEditMode: true,
+					}
+				}
+
+				try {
+					const { data } = await api.get(link, config)
+					
+					if (data) {
+						setQuestions(data.questions);
+						// Обновить idCount, чтобы избежать конфликтов ID
+						const maxId = data.questions.reduce((max, q) => Math.max(max, q.id), 0);
+						setIdCount(maxId + 1);
+					}
+				} catch (err) {
+					console.error("Error fetching test:", err);
+				}
+			};
+			fetchTest();
+		}
+	}, []);
 
 	// Добавить новый вопрос
 	const addQuestion = () => {
@@ -120,14 +156,15 @@ const TestCreate = ({ postId }) => {
 	// Отправить на сервер
 	const saveTest = async () => {
 		try {
-			// const { data } = await api.post(`/tests/${postId}`, { questions });
-			console.log("✅ Test saved:", questions);
+			setQuestions(questions.map(q => ({en:q.en, ru:q.ru, kg:q.kg}))); // очистить id перед отправкой
+			
+			const { data } = await api.post(`/tests/${testIdRef.current}`, { questions });
+			console.log("✅ Test saved:", data);
 		} catch (err) {
 			console.error(err);
-			alert("Error creating test");
 		}
 	};
-
+	
 	return (
 		<div>
 			<h1 className="text-[30px] font-[700]">Create Test</h1>
@@ -152,7 +189,7 @@ const TestCreate = ({ postId }) => {
 				[&::-webkit-scrollbar-thumb]:bg-purple-800">
 
 			{questions.map((q) => (
-				<Card key={q.id} className="border p-3 relative mb-2">
+				<Card key={q.id} className="border-2 border-gray-700 p-3 relative mb-2">
 					<div className="flex justify-between items-center">
 					<input
 							name="question"
@@ -160,7 +197,7 @@ const TestCreate = ({ postId }) => {
 							onChange={(e) => updateQuestion(q.id, e)}
 							placeholder="Enter question text"
 							className="!placeholder-gray-500 bg-gray-900 font-bold w-[100%] px-4 py-2
-								border-indigo border-2 border-gray-800 focus:border-purple-800 outline-none"
+								border-2 border-gray-800 focus:border-purple-800 outline-none"
 						/>
 						<Button
 							variant="destructive"
@@ -238,4 +275,4 @@ const TestCreate = ({ postId }) => {
 	);
 }
 
-export default TestCreate;
+export default TestEditor;
