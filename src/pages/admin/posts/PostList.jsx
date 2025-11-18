@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api";
-import { Edit, Trash2, Search, Download, Plus, RefreshCw, EyeOff, Eye, ExternalLink  } from "lucide-react";
+import { Edit, Trash2, Search, Plus, RefreshCw, EyeOff, Eye, ExternalLink  } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 /*
@@ -15,7 +15,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const UI = {
 	en: {
-		title: "Posts & Tests",
+		title: "Posts",
 		searchPlaceholder: "Search title or author",
 		all: "All",
 		public: "Public",
@@ -33,7 +33,7 @@ const UI = {
 		publishSuccess: "Status updated",
 	},
 	ru: {
-		title: "Посты и Тесты",
+		title: "Посты",
 		searchPlaceholder: "Поиск по заголовку или автору",
 		all: "Все",
 		public: "Опубликовано",
@@ -51,7 +51,7 @@ const UI = {
 		publishSuccess: "Статус обновлён",
 	},
 	kg: {
-		title: "Посттор & Тесттер",
+		title: "Посттор",
 		searchPlaceholder: "Аталышын же авторун изде",
 		all: "Бардыгы",
 		public: "Жарыяланган",
@@ -93,9 +93,9 @@ export default function PostList() {
 	const fetchList = async () => {
 		setLoading(true);
 		try {
-			const l = lang || "en";
-			const pRes = await api.get(`/posts/${l}`);
+			const pRes = await api.get(`/posts/list/`, {params: { lang: lang || "en", details: true }});
 			const postsData = pRes.data?.data || pRes.data || [];
+			console.log("Posts:", postsData);
 			setPosts(postsData);
 		} catch (e) {
 			console.error("Failed load posts:", e);
@@ -138,11 +138,6 @@ export default function PostList() {
 				return sortDesc ? tb - ta : ta - tb;
 			});
 	}, [posts, q, statusFilter, sortDesc]);
-
-	const onEdit = (post) => {
-		// open PostCreate in edit mode
-		navigate(`create?post=${post._id || post.id}`);
-	}
 
 	const onDelete = async (post) => {
 		const title = post.title || 'Untitled';
@@ -197,6 +192,7 @@ export default function PostList() {
 
 					<button onClick={()=>setSortDesc(s => !s)} className="px-3 py-1 bg-gray-800 rounded text-sm">{sortDesc ? labels.recent : labels.oldest}</button>
 
+					{/* TODO: some button */}
 					<button onClick={()=>{}} className="flex items-center gap-2 px-3 py-1 bg-violet-700 rounded text-sm">
 						Button
 					</button>
@@ -231,7 +227,7 @@ export default function PostList() {
 								<tr key={id} className="border-b border-gray-800 hover:bg-gray-900">
 									<td className="p-2">
 										<div className="flex flex-col">
-											<button onClick={()=>onEdit(post)} className="text-left text-sm font-medium hover:underline">{post.title || 'Untitled'}</button>
+											<button onClick={()=>navigate(`/article/${post._id}`)} className="text-left text-sm font-medium hover:underline">{post.title || 'Untitled'}</button>
 											<div className="text-xs text-gray-500">{(post.desc || "").slice(0, 120)}</div>
 										</div>
 									</td>
@@ -240,14 +236,19 @@ export default function PostList() {
 									<td className="p-2"><StatusBadge status={post.status || "Unknown"} /></td>
 									<td className="p-2">
 										<div className="flex items-center gap-2">
-											{!post?.hasTest ? (
-												<button onClick={() => navigate(`../tests/editor/${id}?mode=create`)} className="text-xs text-violet-400 hover:underline"><Plus size={14}/></button>
-											) : <button onClick={() => navigate(`../tests/editor/${id}?mode=edit`)} className="text-xs text-violet-400 hover:underline"><ExternalLink size={14}/></button>}
+											{!post?.hasTest ?
+											<button onClick={() => navigate(`../tests/editor/${id}?mode=create`)} title="Add test" className="text-xs text-green-400 hover:underline">
+												<Plus size={18}/>
+											</button>
+											:
+											<button onClick={() => navigate(`../tests/editor/${id}?mode=edit`)} title="Open test" className="text-xs text-blue-400 hover:underline">
+												<ExternalLink size={18}/>
+											</button>}
 										</div>
 									</td>
 									<td className="p-2 text-right">
 										<div className="inline-flex gap-2">
-											<button onClick={()=>onEdit(post)} title="Edit" className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700">
+											<button onClick={()=>navigate(`editor?id=${post._id}`)} title="Edit" className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700">
 												<Edit size={14}/>
 											</button>
 

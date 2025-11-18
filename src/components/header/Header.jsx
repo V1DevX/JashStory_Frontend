@@ -24,7 +24,7 @@ const Header = ({className='', dark=false}) => {
     localStorage.setItem('language', newLanguage);
   };
 
-  const translations = {
+  const UI = {
     worldHistory: {
       en: "World History",
       ru: "Мировая История",
@@ -80,7 +80,7 @@ const Header = ({className='', dark=false}) => {
                 ${dark ? "text-white" : "text-black"}
                 hover:scale-[1.1] transition-all duration-300 ease-in-out text-center`}
               onClick={()=>navigate(item.link)}>
-              {translations[item.id][language]}
+              {UI[item.id][language]}
             </li>
           ))}
         </ul>
@@ -109,19 +109,19 @@ const Header = ({className='', dark=false}) => {
       >
         <ul className="flex flex-col items-center gap-4 py-4">
           <li className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {translations.worldHistory[language]}
+          {UI.worldHistory[language]}
             
           </li>
           <li className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {translations.historyOfKyrgyzstan[language]}
+          {UI.historyOfKyrgyzstan[language]}
             
           </li>
           <li className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {translations.olympiadHistory[language]}
+          {UI.olympiadHistory[language]}
             
           </li>
           <li onClick={()=>navigate('/about')} className="hover:text-[20px] transition-all duration-300 ease-in-out">
-          {translations.aboutUs[language]}
+          {UI.aboutUs[language]}
             
           </li>
         </ul>

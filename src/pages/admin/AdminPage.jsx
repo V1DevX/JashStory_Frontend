@@ -23,8 +23,7 @@ const AdminPage = () => {
 			<Route path="dashboard" element={<Dashboard />}/>
 			<Route path="posts">
 				<Route index element={<PostList />}/>
-				<Route path="editor" element={<PostEditor />} /> 
-				{/* TODO: path editor/:id */}
+				<Route path="editor" element={<PostEditor />} />
 			</Route>
 			<Route path="tests">
 				<Route index element={<TestList />}/>

@@ -26,7 +26,7 @@ const Catalog = () => {
 			setLoading(true)
 			try {
 				const response = await fetch(
-					`${API_URL}/posts/${language}?page=${page}`,
+					`${API_URL}/posts/list?lang=${language}&page=${page}`,
 					{
 						headers: {
 							'Content-Type': 'application/json',

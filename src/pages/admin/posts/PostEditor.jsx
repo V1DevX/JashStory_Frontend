@@ -7,9 +7,10 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { List, Save, Trash2, Plus } from "lucide-react";
 
 const PostEditor = () => {
-  const [params] = useSearchParams();
-  const postIdRef = useRef(params.id || null);
+  const [ searchParams ] = useSearchParams();
+  const mode = searchParams.get("mode") || "create"; // create or edit
   
+  // Form data ref
   const formDataRef = useRef(
     JSON.parse(localStorage.getItem('newPost'))
     || {
@@ -19,9 +20,6 @@ const PostEditor = () => {
       kg: {title: "", desc: "", blocks: []},
     }
   )
-
-  const { user } = useAuth();
-
   // Redactor states
   const [currLang, setCurrLang] = useState('ru')
   const [previewImageUrl, setPreviewImageUrl] = useState("")
@@ -37,7 +35,6 @@ const PostEditor = () => {
   const listDrafts = useDraftStore(state => state.listDrafts)
 
   // draft id для текущей сессии (если передан ?draft=ID - используем его)
-  const [searchParams] = useSearchParams()
   const draftIdRef = useRef(searchParams.get('draft') || `draft-${Date.now()}`)
 
   // UI: Radix dialog open
@@ -78,8 +75,40 @@ const PostEditor = () => {
     setOpenDrafts(false)
   }
 
-  const removeDraft = (id) => deleteDraft(id)
+  // --- Обновление данных при смене языка ---
+  const updateAllData = (lang=currLang) => {
+    formDataRef.current[currLang].title = title
+    formDataRef.current[currLang].desc = desc
+    formDataRef.current[currLang].blocks = blocks
 
+    setTitle(formDataRef.current[lang].title)
+    setDesc(formDataRef.current[lang].desc)
+    setBlocks(syncBlocks(formDataRef.current[lang].blocks, blocks))
+
+    setCurrLang(lang)
+  }
+
+  // --- Синхронизация блоков между языками ---
+  const syncBlocks = (oldBlocks, newBlocks) => {
+    const oldMap = oldBlocks.reduce((map, block) => {
+      switch (block.type){
+        case 'img': map[block.id] = { desc: block.desc }; break
+        case 'div': map[block.id] = { desc: block.desc, content: block.content }; break
+        case 'h': case 'p': map[block.id] = { content: block.content }; break
+        default: map[block.id] = {Error: true}
+      }
+      return map;
+    }, {});
+    return newBlocks.map(block => { 
+      switch (block.type){
+        case "img": return {...block, desc: oldMap[block.id]?.desc || ""}
+        case "div": return {...block, desc: oldMap[block.id]?.desc || "", content: oldMap[block.id]?.content || ""}
+        default: return {...block, content: oldMap[block.id]?.content || ""}
+      }
+    })
+  }
+
+  // --- Блоки контента ---
   const addBlock = (type) => {
     const newBlock = { id: idCount, type }
 
@@ -142,18 +171,6 @@ const PostEditor = () => {
     const imageData = await uploadImage(file, formDataRef.current.previewImage?.public_id, ['post_preview'])
     formDataRef.current.previewImage = imageData
     setPreviewImageUrl(imageData.url)
-  }
-
-  const updateAllData = (lang=currLang) => {
-    formDataRef.current[currLang].title = title
-    formDataRef.current[currLang].desc = desc
-    formDataRef.current[currLang].blocks = blocks
-
-    setTitle(formDataRef.current[lang].title)
-    setDesc(formDataRef.current[lang].desc)
-    setBlocks(syncBlocks(formDataRef.current[lang].blocks, blocks))
-
-    setCurrLang(lang)
   }
 
   const updateBlock = async (id, e) => {
@@ -254,26 +271,8 @@ const PostEditor = () => {
     </div>
     {DeleteButton(block.id)}
   </div>
-
-  const syncBlocks = (oldBlocks, newBlocks) => {
-    const oldMap = oldBlocks.reduce((map, block) => {
-      switch (block.type){
-        case 'img': map[block.id] = { desc: block.desc }; break
-        case 'div': map[block.id] = { desc: block.desc, content: block.content }; break
-        case 'h': case 'p': map[block.id] = { content: block.content }; break
-        default: map[block.id] = {Error: true}
-      }
-      return map;
-    }, {});
-    return newBlocks.map(block => { 
-      switch (block.type){
-        case "img": return {...block, desc: oldMap[block.id]?.desc || ""}
-        case "div": return {...block, desc: oldMap[block.id]?.desc || "", content: oldMap[block.id]?.content || ""}
-        default: return {...block, content: oldMap[block.id]?.content || ""}
-      }
-    })
-  }
-
+  
+  // --- Загрузка поста ---
   const uploadPost = async () => {
     updateAllData()
     for (const lang of ['en', 'ru', 'kg']) {

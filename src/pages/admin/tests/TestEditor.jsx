@@ -19,16 +19,17 @@ const TestEditor = () => {
 	
 	const params = useParams();
 	const testIdRef = useRef(params.id || null);
-	const [searchParams, setSearchParams] = useSearchParams();
+
+	const [ searchParams ] = useSearchParams();
 	const mode = searchParams.get("mode") || "create"; // create or edit
 
 	const [lang, setLang] = useState("ru");
-	const [idCount, setIdCount] = useState(2);
+	const idCountRef = useRef(2);
 	const [questions, setQuestions] = useState([{
 		id: 1,
-		en: { question: "", options: [{ text: "", isCorrect: false }], desc: "" },
-		ru: { question: "", options: [{ text: "", isCorrect: false }], desc: "" },
-		kg: { question: "", options: [{ text: "", isCorrect: false }], desc: "" },
+		en: { text: "", options: [{ text: "", isCorrect: false }], desc: "" },
+		ru: { text: "", options: [{ text: "", isCorrect: false }], desc: "" },
+		kg: { text: "", options: [{ text: "", isCorrect: false }], desc: "" },
 	}]);	
 
 	useEffect(() => {
@@ -62,13 +63,27 @@ const TestEditor = () => {
 	// Добавить новый вопрос
 	const addQuestion = () => {
 		const newQ = {
-			id: idCount,
-			en: { question: "", options: [], desc: "" },
-			ru: { question: "", options: [], desc: "" },
-			kg: { question: "", options: [], desc: "" },
+			id: idCountRef.current,
+			en: { text: "", options: [{ text: "", isCorrect: false }], desc: "" },
+			ru: { text: "", options: [{ text: "", isCorrect: false }], desc: "" },
+			kg: { text: "", options: [{ text: "", isCorrect: false }], desc: "" },
 		};
 		setQuestions([...questions, newQ]);
-		setIdCount(idCount + 1);
+		idCountRef.current++;
+	};
+
+	// Обновить текст вопроса
+	const updateQuestion = (qid, e) => {
+		const { name, value } = e.target;
+		setQuestions((prev) =>
+			prev.map((q) =>
+				q.id === qid ? { ...q, [lang]: { ...q[lang], [name]: value } } : q
+			)
+		);
+	};
+
+	const deleteQuestion = (qid) => {
+		setQuestions((prev) => prev.filter((q) => q.id !== qid));
 	};
 
 	// Добавить новый вариант ответа к каждому языку
@@ -81,7 +96,6 @@ const TestEditor = () => {
 					newOpts[l] = {
 						...q[l],
 						options: [...q[l].options, { text: "", isCorrect: false }],
-						desc: ""
 					}
 				})
 
@@ -90,15 +104,6 @@ const TestEditor = () => {
 		);
 	};
 
-	// Обновить текст вопроса
-	const updateQuestion = (qid, e) => {
-		const { name, value } = e.target;
-		setQuestions((prev) =>
-			prev.map((q) =>
-				q.id === qid ? { ...q, [lang]: { ...q[lang], [name]: value } } : q
-			)
-		);
-	};
 
 	// Обновить вариант ответа
 	const updateOption = (qid, idx, e) => {
@@ -148,17 +153,17 @@ const TestEditor = () => {
 		);
 	};
 
-	// Удалить вопрос
-	const deleteQuestion = (qid) => {
-		setQuestions((prev) => prev.filter((q) => q.id !== qid));
-	};
-
-	// Отправить на сервер
 	const saveTest = async () => {
 		try {
-			setQuestions(questions.map(q => ({en:q.en, ru:q.ru, kg:q.kg}))); // очистить id перед отправкой
+			const convertedQuestions = Object.fromEntries(
+				['en', 'ru', 'kg'].map(lang => [
+					lang,
+					questions.map(q => q[lang]).filter(Boolean),
+				])
+			);
+			console.log(convertedQuestions);
 			
-			const { data } = await api.post(`/tests/${testIdRef.current}`, { questions });
+			const { data } = await api.post(`/tests/${testIdRef.current}`, { questions: convertedQuestions });
 			console.log("✅ Test saved:", data);
 		} catch (err) {
 			console.error(err);
@@ -192,8 +197,8 @@ const TestEditor = () => {
 				<Card key={q.id} className="border-2 border-gray-700 p-3 relative mb-2">
 					<div className="flex justify-between items-center">
 					<input
-							name="question"
-							value={q[lang].question}
+							name="text"
+							value={q[lang].text}
 							onChange={(e) => updateQuestion(q.id, e)}
 							placeholder="Enter question text"
 							className="!placeholder-gray-500 bg-gray-900 font-bold w-[100%] px-4 py-2

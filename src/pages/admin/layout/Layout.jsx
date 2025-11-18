@@ -1,95 +1,7 @@
-// import React, { useState } from "react";
-// import { useNavigate, Outlet, Navigate } from "react-router";
-// import { useLocation } from 'react-router-dom'
-
-// import { useAuth } from "../../../contexts/AuthContext";
-// import { useLanguage } from "../../../contexts/LanguageContext";
-// import Loader from "../../../components/loader/Loader";
-
-
-// const AdminLayout = () => {
-// 	const { user, loading } = useAuth();
-// 	if (loading) return <Loader />; // спиннер по вкусу
-// 	if (user?.role > 2) return <Navigate to="/" replace />;
-
-// 	const location = useLocation().pathname
-// 	const navigate = useNavigate()
-
-// 	const sideNavList = [
-// 		{
-// 			text: 'Dashboard',
-// 			url: "/admin/dashboard",
-// 			svg:	'🏠',
-// 		},
-// 		{
-// 			text: 'Posts',
-// 			url: "/admin/posts",
-// 			svg:	'📚'
-// 		},
-// 		{
-// 			text: 'Tests',
-// 			url: "/admin/tests",
-// 			svg:	'📑'
-// 		},
-// 		{
-// 			text: 'Users',
-// 			url: "/admin/users",
-// 			svg:	'👥'
-// 		},
-// 		// {
-// 		// 	text: '****',
-// 		// 	url: "",
-// 		// 	svg:	'*'
-// 		// },
-// 	]
-
-
-// 	// TODO: Edit it all, can add bootstrap 
-// 	return (
-// 	<div className="text-white h-[100vh] no-scroll">
-// 		<nav className="w-full h-[50px] flex justify-between items-center px-5
-// 										bg-slate-900 border-b-[3px] border-purple-600">
-// 			<h1 className="text-[32px] font-[800] font-unbounded drop-shadow-[0_0px_10px_rgba(125,0,255,1)]">
-// 				Jash Story
-// 			</h1>
-// 			<div className="flex items-center gap-3">
-// 				<h1 className="text-[24px] font-[800]">
-// 					{user.name}
-// 				</h1>
-// 				<img src="none"/>
-// 			</div>
-// 		</nav>
-
-// 		<div className="flex h-[calc(100vh-50px)]">
-// 			<aside className="hidden sm:block md:w-[20%] bg-slate-950 border-r-[3px] border-purple-700">
-// 				<div className="py-3 overflow-y-auto">
-// 					<ul className="space-y-2 font-medium">
-// 						{sideNavList.map(li => 
-// 								<li className={`cursor-pointer flex items-center p-2 group ${location.includes(li.url) ? 
-// 									"drop-shadow-[0_0px_5px_rgba(125,0,255,1)] bg-gradient-to-r from-purple-950/35 to-purple-700": 
-// 									"bg-gradient-to-r from-zinc-950/0 to-zinc-800/80"}`} 
-// 									onClick={()=>{navigate(li.url)}} key={li.text}>
-// 									<p className='text-[24px]'>{li.svg}</p><span className="text-[20px] ms-3">{li.text}</span>
-// 								</li>
-// 						)}
-// 					</ul>
-// 				</div>
-// 			</aside>
-
-// 			<div className="px-4 bg-gray-950 w-[100%] sm:w-[80%]">
-// 				<Outlet/>
-// 			</div> 
-// 		</div>
-		
-// 	</div>
-// )}
-
-// export default AdminLayout;
-
 import React, { useState, useMemo, useEffect } from "react";
 import { NavLink, Outlet, Navigate, useLocation, Link } from "react-router-dom"; // Добавил Link для breadcrumbs
 import { useAuth } from "@/contexts/AuthContext";
-import Loader from "../../../components/loader/Loader"; // Убедитесь, что Loader тёмный (color="#a78bfa" или white)
+import Loader from "@/components/loader/Loader"; // Убедитесь, что Loader тёмный (color="#a78bfa" или white)
 import {
   Home,
   Users,
@@ -156,24 +68,39 @@ const AdminLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Принудительная активация тёмной темы при монтировании (чтобы избежать "белого")
-  useEffect(() => {
-    // Удаляем светлую тему, если есть
-    if (document.documentElement.classList.contains('light')) {
-      document.documentElement.classList.remove('light');
+  const [warn, setWarn] = useState(null);
+  const handleWarnAction = (action, message) => { // action type is function
+    if (!message && warn !== message) {
+      setWarn(null);
+    } else { 
+      action(); 
     }
-    // Добавляем тёмную тему
-    document.documentElement.classList.add('dark');
-    
-    // Очистка при размонтировании (опционально, раскомментируйте если нужно)
-    // return () => document.documentElement.classList.remove('dark');
-  }, []);
+  };
 
-  if (loading) return <Loader />;
+  // TODO: fix this useless code
+  // // Принудительная активация тёмной темы при монтировании (чтобы избежать "белого")
+  // useEffect(() => {
+  //   // Удаляем светлую тему, если есть
+  //   if (document.documentElement.classList.contains('light')) {
+  //     document.documentElement.classList.remove('light');
+  //   }
+  //   // Добавляем тёмную тему
+  //   document.documentElement.classList.add('dark');
+    
+  //   // Очистка при размонтировании (опционально, раскомментируйте если нужно)
+  //   // return () => document.documentElement.classList.remove('dark');
+  // }, []);
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-screen bg-gray-900 dark:bg-gray-900">
+      <Loader size={48} color="#a78bfa" />
+    </div>
+  );
   if (user?.role > 2) return <Navigate to="/" replace />;
 
   const handleLogout = () => {
-    logout();
+    const message = 'Are you sure you want to logout?'
+    handleWarnAction(() => logout(), message);
   };
 
   const toggleSidebar = () => {
@@ -214,7 +141,25 @@ const AdminLayout = () => {
           onClick={toggleSidebar}
         />
       )}
-      
+      {warn && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80">
+          <div className="bg-gray-800 dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+            <p className="mb-4">{warn}</p>
+            <div className="flex justify-center gap-4">
+              <Button onClick={() => logout() }
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Yes
+              </Button>
+              <Button onClick={() => setWarn(null)}
+                className="bg-gray-700 hover:bg-gray-600 text-white"
+              >
+                No
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Sidebar */}
       <aside
         className={`flex flex-col transition-all duration-300 ease-in-out z-40 fixed md:relative h-full bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 shadow-lg border-r border-gray-700 dark:border-gray-700 ${
@@ -224,7 +169,7 @@ const AdminLayout = () => {
       >
         {/* Logo/Header Sidebar */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-700 dark:border-gray-700 flex-shrink-0 bg-gray-800 dark:bg-gray-800">
-          {!isCollapsed && <span className="font-bold text-xl text-purple-500 dark:text-purple-500 font-unbounded">Jash_Story</span>
+          {!isCollapsed && <NavLink className="font-bold text-xl text-purple-500 dark:text-purple-500 font-unbounded" to={'/'}>Jash_Story</NavLink>
           }
           <Button
             variant="ghost"
@@ -280,7 +225,7 @@ const AdminLayout = () => {
                 {user.name[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {!isCollapsed ? (
+            {!isCollapsed && (
               <>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-100 dark:text-gray-100 truncate">{user.name}</p>
@@ -295,24 +240,6 @@ const AdminLayout = () => {
                   <LogOut className="w-4 h-4" />
                 </Button>
               </>
-            ) : (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleLogout}
-                      className="ml-auto text-gray-400 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-400 hover:bg-gray-700 dark:hover:bg-gray-700 flex-shrink-0"
-                    >
-                      <LogOut className="w-4 h-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 border-gray-700 dark:border-gray-700">
-                    Logout
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             )}
           </div>
         </div>
@@ -327,14 +254,14 @@ const AdminLayout = () => {
         <header className="flex items-center justify-between h-16 px-4 border-b border-gray-700 dark:border-gray-700 bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 shadow-sm flex-shrink-0">
           {/* Left: Breadcrumbs + Search */}
           <div className="flex items-center gap-4 flex-1">
-            {/* Breadcrumbs */}
+            
             <CustomBreadcrumb breadcrumbs={breadcrumbs} />
 
-            {/* Global Search */}
+            
             <div className="relative flex-1 max-w-md hidden sm:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 w-4 h-4" />
               <Input
-                placeholder="Search..."
+                placeholder="Note: Search is disabled"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 bg-gray-700 dark:bg-gray-700 text-gray-100 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 border-gray-600 dark:border-gray-600 w-full" // Тёмный input
