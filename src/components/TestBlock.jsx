@@ -1,136 +1,112 @@
-import React, { useEffect, useState } from "react";
+import { useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { API_URL } from "@/config";
+import { Check, X } from "lucide-react";
 
-const TestBlock = ({ id }) => {
-	const { language } = useLanguage();
-	const [test, setTest] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState('hi');
-	const [idx, setIdx] = useState(0);
+const letters = ["A", "B", "C", "D", "E", "F"]; // fallback
 
-	const fetchData = async (path, query, errorMessage) => {
-		try {
-			const response = await fetch(
-				`${API_URL}/${path.join("/")}${query ? `?${new URLSearchParams(query).toString()}` : ""}`,
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			).then(res => res.json())
 
-			return response.data
-		} catch (err) {
-			console.error(`${errorMessage}:`, err);
-			setError(errorMessage);
-		}
-	};
+const TestBlock = ({ test, lang }) => {
+  if (!test) return null;
 
-	const loadTest = async () => {
-		try {
-			setLoading(true)
-			const testData = await fetchData(["tests", id], {lang:language || "en", answers:true}, "Failed to load the test");
-			setTest(testData.questions || []);
-			console.log(test);
-			
-		} catch (err) {
-			console.error("Error loading test:", err);
-		} finally {
-			setLoading(false)
-		}
-	};
+  const id = useRef(test._id);
+	const { language } = lang || useLanguage();
+  const qList = test.questions?.[language] || [];
 
-	useEffect(() => {
-		loadTest()
-	}, [language, id]);
-	
-	if (error) {
-		return <div className="text-red-600 text-center my-6">{error}</div>;
-	}
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [checked, setChecked] = useState(false);
+  const question = qList[current];
 
-	return (
-		<div className="w-full max-w-3xl mx-auto my-10">
-			<div className="bg-white text-gray-900 rounded-2xl shadow-lg p-8">
-				<div className="text-center mb-6">
-					<h3 className="text-2xl font-semibold">Решить тест</h3>
-					<p className="text-sm text-gray-500">Решите тест чтобы укрепить свои знания</p>
-				</div>
+  if (!question) return null;
 
-				<div className="mb-4 border-b pb-4">
-					<div className="text-center font-semibold text-lg">qText</div>
-				</div>
+  const handleCheck = () => {
+    if (selected == null) return;
+    setChecked(true);
+  };
 
-				<ul className="space-y-3">
-					{opts.map((opt, i) => {
-						const selected = (answers[idx] || []).includes(i);
-						const correct = !!opt.isCorrect;
-						const showResult = checked;
-						const bg = showResult ? (correct ? "bg-green-50 border-green-300" : (selected ? "bg-red-50 border-red-300" : "bg-white")) : (selected ? "bg-violet-50 border-violet-300" : "bg-white");
-						return (
-							<li key={i} className={`flex items-center gap-4 p-3 rounded-lg border ${bg} hover:bg-gray-50`}>
-								<button
-									onClick={() => toggleOption(i)}
-									className="flex-none w-8 h-8 inline-flex items-center justify-center rounded-full border text-sm font-medium text-gray-700 bg-white"
-									aria-pressed={selected}
-								>
-									{String.fromCharCode(65 + i)}
-								</button>
+  const next = () => {
+    setSelected(null);
+    setChecked(false);
+    setCurrent((c) => c + 1);
+  };
 
-								<div className="flex-1">
-									<button onClick={() => toggleOption(i)} className="text-left w-full">
-										<div className="text-sm">{opt.text}</div>
-									</button>
-								</div>
+  return (
+    <div className="w-full max-w-3xl mx-auto p-8 rounded-3xl shadow-xl bg-white">
+      <h1 className="text-3xl font-bold text-center text-purple-500 mb-2">Решить тест</h1>
+      <p className="text-center text-gray-500 mb-10">Решите тест что бы укрепить свои знания</p>
 
-								{showResult && (
-									<div className="flex-none text-sm">
-										{correct ? <span className="text-green-600 font-medium">✓</span> : (selected ? <span className="text-red-600 font-medium">✕</span> : null)}
-									</div>
-								)}
-							</li>
-						);
-					})}
-				</ul>
+      <div className="text-center text-2xl font-semibold mb-8">{question.text}</div>
 
-				<div className="mt-6 flex items-center justify-between">
-					<div className="text-sm text-gray-500">
-						{idx + 1} / {test.length}
-					</div>
+      <div className="flex flex-col gap-3">
+        {question.options.map((opt, i) => {
+          const isCorrect = opt.correct === true;
+          const isSelected = selected === i;
 
-					<div className="flex items-center gap-3">
-						<button
-							onClick={() => { setChecked(false); setAnswers({}); setIdx( Math.max(0, idx-1) ); }}
-							className="px-3 py-2 bg-gray-100 text-gray-700 rounded"
-						>
-							Пропустить
-						</button>
+          let style = "";
+          if (checked) {
+            if (isSelected && isCorrect) style = "border-green-500 bg-green-50 text-green-600";
+            else if (isSelected && !isCorrect) style = "border-red-500 bg-red-50 text-red-600";
+            else if (isCorrect) style = "border-green-500 bg-green-50 text-green-600";
+          }
 
-						<button
-							onClick={() => {
-								handleCheck();
-							}}
-							className="px-4 py-2 bg-gradient-to-r from-violet-500 to-pink-400 text-white rounded shadow"
-						>
-							Проверить
-						</button>
+          return (
+            <div
+              key={i}
+              className={`flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition ${style}`}
+              onClick={() => !checked && setSelected(i)}
+            >
+              <div
+                className={`flex items-center justify-center w-8 h-8 rounded-full border font-semibold ${
+                  isSelected ? "bg-gray-900 text-white" : "bg-white text-gray-600"
+                }`}
+              >
+                {letters[i]}
+              </div>
+              <span className="text-lg">{opt.text}</span>
+            </div>
+          );
+        })}
+      </div>
 
-						<button
-							onClick={() => {
-								setChecked(false);
-								setIdx(i => Math.min(test.length - 1, i + 1));
-							}}
-							className="px-3 py-2 bg-gray-100 text-gray-700 rounded"
-						>
-							Далее
-						</button>
-					</div>
-				</div>
+      <div className="flex justify-between items-center mt-10">
+        <button className="text-gray-500">пропустить</button>
 
-			</div>
-		</div>
-	);
-};
+        {!checked && (
+          <button
+            onClick={handleCheck}
+            className="px-8 py-3 bg-purple-500 text-white rounded-2xl shadow-md hover:bg-purple-600 transition"
+          >
+            Проверить
+          </button>
+        )}
+
+        {checked && (
+          <button
+            onClick={next}
+            className="px-8 py-3 bg-purple-500 text-white rounded-2xl shadow-md hover:bg-purple-600 transition"
+          >
+            Далее
+          </button>
+        )}
+      </div>
+
+      {checked && (
+        <div className="absolute bottom-6 right-6 bg-white shadow-xl px-5 py-4 rounded-2xl border flex items-center gap-3">
+          {question.options.some((o, i) => o.correct && i === selected) ? (
+            <>
+              <span className="text-green-600 font-semibold">Правильно!</span>
+              <Check className="text-green-600" size={20} />
+            </>
+          ) : (
+            <>
+              <span className="text-red-600 font-semibold">Неправильно</span>
+              <X className="text-red-600" size={20} />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default TestBlock;

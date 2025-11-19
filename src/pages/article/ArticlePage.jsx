@@ -16,7 +16,7 @@ const ArticlePage = () => {
 	const [articleData, setArticleData] = useState(null);
 	const [articleContent, setArticleContent] = useState([])
 	const [loading, setLoading] = useState(true);
-	const [hasTest, setHasTest] = useState(false);
+	const [test, setTest] = useState(null);
 
 	// Error state
 	const [error, setError] = useState(null);
@@ -101,11 +101,12 @@ const ArticlePage = () => {
 					},
 				}
 			).then(res => res.json())
-
-			return response.data
+			
+			// if (response.code !== 200) throw response;
+			return response.data;
 		} catch (err) {
-			console.error(`${errorMessage}:`, err);
-			setError(errorMessage);
+			setError(err.message || errorMessage);
+			return null;
 		}
 	};
 
@@ -115,18 +116,19 @@ const ArticlePage = () => {
 			setLoading(true)
 			// Fetch article data
 			const article = await fetchData(["posts", id], {lang:language || "en"}, "Failed to load the article");
+			if (!article) return
+			// if (error || article.code !== 200) { throw `${article.code}: ${article.message}` }
+
 			// Set article data
 			setPreviewImageUrl(article.previewImage.url)
 			setArticleData({
-				title: article.title,
-				desc: article.desc,
+				title: article[language].title,
+				desc: article[language].desc,
 			})
-			setArticleContent(transformContent(article.blocks))
-			console.log(article.hasTest);
-			
-			setHasTest(article.hasTest);
+			setArticleContent( transformContent(article[language].blocks) )
+			setTest(article.test);
 		} catch (err) {
-			console.error("Error loading article:", err);
+			setError(err);
 		} finally {
 			setLoading(false)
 		}
@@ -160,9 +162,9 @@ const ArticlePage = () => {
 					</div>
 				</div>
 				
-				{hasTest && (
+				{test && (
 					<div className="py-10 flex flex-col items-center gap-6">
-						<TestBlock id={id} />
+						<TestBlock test={test}/>
 					</div>
 				)}
 			</>}
