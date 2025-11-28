@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 	Изменения:
 	- фикс bug: lang может быть undefined -> используем fallback
 	- добавил кнопку Refresh
-	- добавил toggle статуса Hidden <-> public/draft (через PATCH /posts/:id)
+	- добавил toggle статуса Hidden <-> published (через PATCH /posts/:id)
 	- перевод UI по lang
 	- edit ведёт на create?post=ID (открывается в PostCreate)
 */
@@ -18,7 +18,7 @@ const UI = {
 		title: "Posts",
 		searchPlaceholder: "Search title or author",
 		all: "All",
-		public: "Public",
+		published: "published",
 		draft: "Draft",
 		hidden: "Hidden",
 		archived: "Archived",
@@ -36,7 +36,7 @@ const UI = {
 		title: "Посты",
 		searchPlaceholder: "Поиск по заголовку или автору",
 		all: "Все",
-		public: "Опубликовано",
+		published: "Опубликовано",
 		draft: "Черновик",
 		hidden: "Скрыто",
 		archived: "Архив",
@@ -54,7 +54,7 @@ const UI = {
 		title: "Посттор",
 		searchPlaceholder: "Аталышын же авторун изде",
 		all: "Бардыгы",
-		public: "Жарыяланган",
+		published: "Жарыяланган",
 		draft: "Черновик",
 		hidden: "Жашырын",
 		archived: "Архив",
@@ -71,7 +71,7 @@ const UI = {
 }
 
 const StatusBadge = ({ status }) => {
-	const cls = status === "public" ? "bg-green-700" :
+	const cls = status === "published" ? "bg-green-700" :
 							status === "hidden" ? "bg-gray-600" : "bg-yellow-600";
 	return <span className={`text-xs px-2 py-1 rounded ${cls} text-white`}>{status}</span>
 }
@@ -152,22 +152,20 @@ export default function PostList() {
 		}
 	}
 
-	// toggle between hidden and previous (public/draft). For simplicity: if currently hidden -> set to 'public'
-	// otherwise set to 'hidden'
+
 	const toggleHidden = async (post) => {
 		const id = post._id;
-		const prev = post.status;
-		if (!prev) return;
+		const prevStatus = post.status;
+		if (!prevStatus) return;
 
-		const newStatus = prev === "hidden" ? "public" : "hidden";
-		// optimistic
-		setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: newStatus } : p)));
+		const newStatus = prevStatus === "hidden" ? "published" : "hidden";
+
 		try {
+			setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: newStatus } : p)));
 			await api.patch(`/posts/${id}`, { status: newStatus });
-			// optional: show toast (omitted)
 		} catch (e) {
 			console.error("Status update failed", e);
-			setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: prev } : p)));
+			setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: prevStatus } : p)));
 		}
 	}
 
@@ -184,7 +182,7 @@ export default function PostList() {
 
 					<select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-gray-900 px-2 py-1 rounded text-sm">
 						<option value="all">{labels.all}</option>
-						<option value="public">{labels.public}</option>
+						<option value="published">{labels.published}</option>
 						<option value="draft">{labels.draft}</option>
 						<option value="hidden">{labels.hidden}</option>
 						<option value="archived">{labels.archived}</option>
