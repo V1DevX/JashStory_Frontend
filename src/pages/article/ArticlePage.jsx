@@ -21,51 +21,6 @@ const ArticlePage = () => {
 	// Error state
 	const [error, setError] = useState(null);
 
-	const pBlock = (index, content, className="") => {
-		return (
-			<span key={index} className={`w-[100%] font-[600] md:text-[16px] text-white 
-			${className}`}>
-				{content}
-			</span>
-		)
-	}
-	const hBlock = (index, content, className="") => {
-		return (
-			<h2 key={index} className={`w-[100%] text-3xl font-[800] text-[32px] leading-[44px] text-white 
-			${className}`}>
-				{content}
-			</h2>
-		)
-	}
-	const imgBlock = (index, url, desc) => { // TODO: add size and shape params
-		return (
-			<div key={index} className="flex flex-col items-center m-2 px-4">
-				<img className="w-full max-h-[500px]" src={url} alt={desc} /> 
-				<i className="text-[16px] text-white">{desc}</i>
-			</div>
-		)
-	}
-	const divBlock = (index, content, desc, shape, side) => {
-		return (
-			<div key={index} className={`md:flex w-full ${side==='left' ?'flex-row-reverse' : 'flex-row'}`}>
-				<span className="md:flex-auto flex items-center font-[600] text-[16px] text-white">
-				{content}</span>
-				
-				<div className="flex-none mt-[20px] md:mt-[0px] md:ml-[30px] flex md:flex-1/2 basis-1/3 flex-col justify-center items-center m-2 px-4">
-					<img className={`flex-3/4 md:max-h-[500px] ${shape==="circle" ? 'rounded-full' : ''}`} src={url} alt={desc} /> 
-					<i className="w-[100%] text-center text-[16px] text-white">{desc}</i>
-				</div>
-			</div>
-		)
-	}
-	const errorBlock = (index, message) => {
-		return (
-			<p key={index} className="font-[700] md:text-[16px] text-[#f00] bg-black">
-				*ERROR_LOADING_BLOCK: {message}*
-			</p>
-		)
-	}
-
 	const transformContent = (data) => {
 		if(!data) return <>nothing's here...</>
 		
@@ -73,18 +28,49 @@ const ArticlePage = () => {
 
 			switch(block.type){
 				case "p":
-					return pBlock(index, block.content);
+					return (
+						<span 
+							key={index} 
+							className={`w-[100%] font-[600] md:text-[16px] text-white`}
+							>
+								{block.content}
+						</span>
+					);
 				
 				case "h": 
-					return hBlock(index, block.content);
+					return (
+						<h2 key={index} className={`w-[100%] text-3xl font-[800] text-[32px] leading-[44px] text-white `}>
+							{block.content}
+						</h2>
+					);
 				
 				case "img":
-					return imgBlock(index, block.url, block.desc);
+					return (
+						<div key={index} className="flex flex-col items-center m-2 px-4">
+							<img className="w-full max-h-[500px]" src={block.url} alt={block.desc} /> 
+							<i className="text-[16px] text-white">{block.desc}</i>
+						</div>
+					);
 				
 				case "div":
-					return divBlock(index, block.content, block.desc, block.shape, block.side);
+					return (
+						<div key={index} className={`md:flex w-full ${block.side==='left' ?'flex-row-reverse' : 'flex-row'}`}>
+							<span className="md:flex-auto flex items-center font-[600] text-[16px] text-white">
+							{block.content}</span>
+							
+							<div className="flex-none mt-[20px] md:mt-[0px] md:ml-[30px] flex md:flex-1/2 basis-1/3 flex-col justify-center items-center m-2 px-4">
+								<img className={`flex-3/4 md:max-h-[500px] ${block.shape==="circle" ? 'rounded-full' : ''}`} src={block.url} alt={block.desc} /> 
+								<i className="w-[100%] text-center text-[16px] text-white">{block.desc}</i>
+							</div>
+						</div>
+					);
+				
 				default:
-					return errorBlock(index, `Unknown block type: ${block.type}`);
+					return (
+						<p key={index} className="font-[700] md:text-[16px] text-[#f00] bg-black">
+							*ERROR_LOADING_BLOCK: {block.type}*
+						</p>
+					);
 			}
 		});
 	}
