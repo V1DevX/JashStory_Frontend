@@ -283,13 +283,22 @@ const PostEditor = () => {
       en: formDataRef.current.en,
       kg: formDataRef.current.kg,
       previewImage: formDataRef.current.previewImage
-    }).then(res => console.log(res)).catch(err => console.error(err.message))
+    }).then(res => {
+      console.log(res)
+      alert('Post created successfully')
+      // Очистка черновика и локального хранилища
+      deleteDraft(draftIdRef.current)
 
-    // Очистка черновика и локального хранилища
-    deleteDraft(draftIdRef.current)
-    localStorage.removeItem('newPost')
-    // Перенаправление на список постов
-    window.location.href = '/admin/posts'
+      // Перенаправление на список постов
+      // localStorage.removeItem('newPost')
+      // window.location.href = '/admin/posts'
+    }).catch(err => {
+      console.error(err)
+      alert(err.message)
+    })
+
+    
+    
   }
 
   // --- UI render ---
