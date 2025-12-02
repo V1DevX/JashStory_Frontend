@@ -14,7 +14,7 @@ const Catalog = () => {
 	const [ error, setError ] = useState(null);
 	const [ searchQuery, setSearchQuery ] = useState("");
 	const [ currentPage, setCurrentPage ] = useState(1);
-	const itemsPerPage = 2;
+	const itemsPerPage = 9;
 	const { language } = useLanguage();
 
 	const fetchAllData = async () => {
@@ -121,16 +121,20 @@ const Catalog = () => {
 					<img src={search} alt="Search" />
 				</button>
 			</div>
-			<div className="m-4 md:m-10 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-5 xl:grid-cols-3 lg:gap-11">
-				{loading ? <Loader /> : paginatedCards.map((card) => (
-					<Card
-						id={card._id}
-						key={card._id}
-						img={card.previewImage?.url}
-						text={card?.title || "card title"}
-						bgColor="bg-[#E5E5E5]"
-					/>
-				))}
+			<div className="m-4 md:m-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8">
+				{loading ? (
+					<Loader />
+				) : (
+					paginatedCards.map((card) => (
+						<Card
+							id={card._id}
+							key={card._id}
+							img={card.previewImage?.url}
+							text={card?.title || "card title"}
+							bgColor="bg-[#E5E5E5]"
+						/>
+					))
+				)}
 			</div>
 			<div className="mt-[52px] mb-[52px] flex justify-center gap-2">
 				{[...Array(totalPages)].map((_, index) => (

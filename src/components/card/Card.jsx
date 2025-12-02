@@ -1,41 +1,57 @@
+// import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import { useInView } from "react-intersection-observer";
+import { Card as UICard } from "@/components/ui/card";
+import cloudinaryTransforms from "@/features/cloudinaryTransforms";
 import { useLanguage } from "../../contexts/LanguageContext";
+
+const UI = {
+  en: {
+    read: "Read",
+  },
+  ru: {
+    read: "Читать",
+  },
+  kg: {
+    read: "Көрүү",
+  }
+}
 
 const Card = ({ id, img, text, bgColor = "bg-white" }) => {
   const navigate = useNavigate();
   const { language } = useLanguage()
 
-  const { ref, inView } = useInView({
-    triggerOnce: false,
-    threshold: 0.1,
-  });
+  const finalImage = cloudinaryTransforms(img, [
+		"g_auto:face",  // gravity 
+		"ar_2:1",       // aspect ratio
+    "c_fill",       // crop
+  ]);
 
   const handleArticleClick = () => {
     navigate(`/article/${id}`);
   };
 
   return (
-    <div
-      ref={ref}
-      
-      className={`${bgColor}  rounded-[15px]  flex flex-col p-[20px] gap-4 
-      transition-opacity duration-700 ease-in-out 
-      transform ${inView ? "opacity-100" : "opacity-0"}`}
+    <UICard 
+      className={`relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer transition-transform duration-300 hover:scale-[101%] ${bgColor}`}
+      onClick={handleArticleClick}
     >
-      <img className="w-auto h-[200px] rounded-[23px]" src={img} alt="img" />
-      <p className="font-medium text-xl">{text}</p>
-      <div className="flex justify-between mt-auto">
-        <span className="font-medium text-[24px]">⭐⭐⭐⭐⭐</span>
-        <button
-          onClick={handleArticleClick}
-          className="bg-[#434343] text-white w-[180px] rounded-[24px] hover:opacity-90 transition-all duration-300 ease-in-out"
-        >
-          {language === "en" ? "Read" : "Читать"}
+      <div className="w-full h-48 sm:h-56 md:h-52 lg:h-56 overflow-hidden">
+        <img 
+          src={finalImage}
+          alt={text}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        />
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-lg font-semibold line-clamp-2">{text}</h3>
+        <button className="absolute top-2 right-2 bg-white hover:bg-gray-100 text-gray-800 px-3 py-1 rounded">
+          {UI[language].read}
         </button>
       </div>
-    </div>
-  );
+      
+    </UICard>
+  )
 };
 
 export default Card;

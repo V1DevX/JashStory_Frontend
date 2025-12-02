@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import cloudinaryTransforms from "@/features/cloudinaryTransforms";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { API_URL } from "@/config";
 import PulsingBlock from "@/components/PulsingBlock";
@@ -106,7 +107,7 @@ const ArticlePage = () => {
 			// if (error || article.code !== 200) { throw `${article.code}: ${article.message}` }
 
 			// Set article data
-			setPreviewImageUrl(article.previewImage.url)
+			setPreviewImageUrl(cloudinaryTransforms(article.previewImage.url, ["c_fill", "g_auto:face", "ar_16:9"]));
 			setArticleData({
 				title: article[language].title,
 				desc: article[language].desc,
