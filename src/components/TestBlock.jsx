@@ -180,7 +180,10 @@ const TestBlock = ({ test, lang }) => {
             </div>
             {/* result bar */}
             <div className="w-full sm:w-2/3 h-3 bg-gray-200 rounded-full mb-6 mx-auto overflow-hidden">
-              <div className="h-full bg-purple-500 rounded-full transition-all duration-500" style={{ width: `${(results.filter(r => !r && r !== null).length / qList.length) * 100}%` }}></div>
+              <div 
+                className="h-full bg-purple-500 rounded-full transition-all duration-500" 
+                style={{ width: `${((results.filter(r => !r && r !== null).length+1) / qList.length) * 100}%` }}
+              ></div>
             </div>
           </CardHeader>
 
