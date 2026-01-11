@@ -296,9 +296,6 @@ const PostEditor = () => {
       console.error(err)
       alert(err.message)
     })
-
-    
-    
   }
 
   // --- UI render ---
