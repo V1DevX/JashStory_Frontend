@@ -71,14 +71,14 @@ const Footer = () => {
               <i className={`fab fa-instagram ${styles.instagram}`}></i>
             </a>
             <a
-              href="https://wa.me/996220140041"
+              href="https://wa.me/996704225775"
               className={styles.icon}
               target="_blank"
             >
               <i className={`fab fa-whatsapp ${styles.whatsapp}`}></i>
             </a>
             <a
-              href="https://t.me/+6SGu9MxHxEYyNWRi?fbclid=PAZXh0bgNhZW0CMTEAAaaiYoZoNbsGPUni-Lqbt0w863PVzj7mUk3Wpz5uFDexhitIjPQNUhWs2Vc_aem_QUSPRQmxf49YgddfDFQ2ig"
+              href="https://t.me/V1DevX"
               className={styles.icon}
               target="_blank"
             >
@@ -91,8 +91,7 @@ const Footer = () => {
           <h3 className="text-lg font-bold">
             {translations.contacts[language]}
           </h3>
-          <p className="mt-2">+996 220 140 041</p>
-          <p className="mt-2">jash_story@gmail.com</p>
+          <p className="mt-2">akel.nurlanov@gmail.com</p>
           <p className="mt-2">
             {translations.bishkekCity[language]}
           </p>
