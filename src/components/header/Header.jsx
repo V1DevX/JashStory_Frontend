@@ -31,9 +31,9 @@ const Header = ({className='', dark=false}) => {
       kg: "Дүйнөлүк тарых"
     },
     historyOfKyrgyzstan: {
-      en: "History of Kyrgyzstan",
-      ru: "История Кыргызстана",
-      kg: "Кыргызстандын тарыхы"
+      en: "History of Central Asia",
+      ru: "История Центральной Азии",
+      kg: "Орто Азианын тарыхы"
     },
     olympiadHistory: {
       en: "Olympiad History",
