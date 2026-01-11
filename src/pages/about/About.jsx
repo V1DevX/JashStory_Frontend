@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import Project from "./project/Project";
-import Team from "./team/Team";
+// import Team from "./team/Team";
 import PrevOlympiads from "./prevOlympiads/PrevOlympiads";
 import { useLocation } from "react-router-dom";
 
@@ -20,7 +20,7 @@ const About = () => {
     <>
       <Header />
       <Project />
-      <Team />
+      {/* <Team /> */}
       <div ref={prevOlympiadsRef}>
         <PrevOlympiads />
       </div>
