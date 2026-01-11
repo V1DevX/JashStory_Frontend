@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import api from "../../../api";
 import { Edit, Trash2, Search, Plus, RefreshCw, EyeOff, Eye, ExternalLink  } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -87,8 +87,6 @@ export default function PostList() {
 	const [q, setQ] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [sortDesc, setSortDesc] = useState(true);
-
-	const navigate = useNavigate();
 
 	const fetchList = async () => {
 		setLoading(true);
@@ -210,38 +208,56 @@ export default function PostList() {
 					<thead>
 						<tr className="text-left text-xs text-gray-400 border-b border-gray-800">
 							<th className="p-2">Title</th>
-							<th className="p-2 w-40">Author</th>
-							<th className="p-2 w-36">Date</th>
+							<th className="p-2 w-36">Author & Date</th>
 							<th className="p-2 w-28">Status</th>
-							<th className="p-2 w-40">Test</th>
+							<th className="p-2 w-10">Test</th>
 							<th className="p-2 w-36 text-right">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{!loading ? filtered.map(post => {
-							const id = post._id;
+							const id = post._id || post.id;
 							
 							return (
 								<tr key={id} className="border-b border-gray-800 hover:bg-gray-900">
 									<td className="p-2">
-										<div className="flex flex-col">
-											<button onClick={()=>navigate(`/article/${post._id}`)} className="text-left text-sm font-medium hover:underline">{post.title || 'Untitled'}</button>
-											<div className="text-xs text-gray-500">{(post.desc || "").slice(0, 120)}</div>
-										</div>
+										<Link 
+											to={`/article/${post._id}`}
+											className="flex flex-col"
+										>
+											<div
+												className="text-left text-sm font-medium hover:underline"
+												// title={`${post.desc}`}
+											>
+												{post.title || 'Untitled'}
+											</div>
+											<div className="text-xs text-gray-500 line-clamp-1">{(post.desc || "").slice(0, 120)}</div>
+										</Link>
 									</td>
-									<td className="p-2">{post.createdBy?.name || "Unknown"}</td>
-									<td className="p-2">{new Date(post.updatedAt || null).toLocaleString()}</td>
+									<td className="p-2">
+										<p>{post.createdBy?.name || "Unknown"}</p>
+										<p>{new Date(post.updatedAt || null).toLocaleString()}</p>
+									</td>
 									<td className="p-2"><StatusBadge status={post.status || "Unknown"} /></td>
 									<td className="p-2">
 										<div className="flex items-center gap-2">
-											{!post?.hasTest ?
-											<button onClick={() => navigate(`../tests/editor/${id}?mode=create`)} title="Add test" className="text-xs text-green-400 hover:underline">
-												<Plus size={18}/>
-											</button>
-											:
-											<button onClick={() => navigate(`../tests/editor/${id}?mode=edit`)} title="Open test" className="text-xs text-blue-400 hover:underline">
-												<ExternalLink size={18}/>
-											</button>}
+											{!post?.hasTest ? (
+												<Link
+													to={`/admin/tests/editor/${id}?mode=create&postTitle=${encodeURIComponent(post.title || "")}`}
+													title="Add test"
+													className="text-xs text-green-400 hover:underline inline-flex"
+												>
+													<Plus size={18} />
+												</Link>
+											) : (
+												<Link
+													to={`/admin/tests/editor/${id}?mode=edit&postTitle=${encodeURIComponent(post.title || "")}`}
+													title="Open test"
+													className="text-xs text-blue-400 hover:underline inline-flex"
+												>
+													<ExternalLink size={18} />
+												</Link>
+											)}
 										</div>
 									</td>
 									<td className="p-2 text-right">
