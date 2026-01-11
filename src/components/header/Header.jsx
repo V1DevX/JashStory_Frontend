@@ -7,11 +7,6 @@ import Dropdown from '../Dropdown';
 const Header = ({className='', dark=false}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
-  const languageOptions = [
-    { label:'English', value:'en'},
-    { label:'Русский', value:'ru'},
-    { label:'Кыргызча', value:'kg'},
-  ]
 
   const navigate = useNavigate();
 
@@ -25,6 +20,11 @@ const Header = ({className='', dark=false}) => {
   };
 
   const UI = {
+    languageOptions: [
+      { label:'English', value:'en'},
+      { label:'Русский', value:'ru'},
+      { label:'Кыргызча', value:'kg'},
+    ],
     worldHistory: {
       en: "World History",
       ru: "Мировая История",
@@ -51,6 +51,8 @@ const Header = ({className='', dark=false}) => {
       kg: "Кирүү"
     }
   }
+
+  // TODO: background image = lang flag
 
   return (
     <header 
@@ -89,7 +91,7 @@ const Header = ({className='', dark=false}) => {
       <div className='flex items-center justify-center gap-3'>
 
         {/* Language Dropdown */ }
-        <Dropdown title={language} options={languageOptions} func={handleLanguageChange}/>
+        <Dropdown title={language} options={UI.languageOptions} func={handleLanguageChange}/>
         
         {/* Burger Menu Button */}
         {dark ? "" :
