@@ -5,7 +5,7 @@ import logowhite from "@/assets/logowhite.svg";
 import googlelogo from '@/assets/googlelogo.svg';
 
 const Login = () => {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const Login = () => {
   async function onSubmit(e) {
     e.preventDefault();
     await login(email, password);
-    nav('/admin');
+    navigate('/admin');
   }
 
   return (

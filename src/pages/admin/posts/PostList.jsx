@@ -197,9 +197,12 @@ export default function PostList() {
 						<RefreshCw size={14}/> Refresh
 					</button>
 
-					<button onClick={()=>navigate("editor")} className="flex items-center gap-2 px-3 py-1 bg-green-600 rounded text-sm">
+					<Link
+						to={"editor"}
+						className="flex items-center gap-2 px-3 py-1 bg-green-600 rounded text-sm"
+					>
 						<Plus size={14}/> {labels.new}
-					</button>
+					</Link>
 				</div>
 			</div>
 
@@ -262,9 +265,13 @@ export default function PostList() {
 									</td>
 									<td className="p-2 text-right">
 										<div className="inline-flex gap-2">
-											<button onClick={()=>navigate(`editor?id=${post._id}`)} title="Edit" className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700">
+											<Link
+												title="Edit"
+												to={`editor?id=${post._id}`}
+												className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700"
+											>
 												<Edit size={14}/>
-											</button>
+											</Link>
 
 											<button onClick={() => toggleHidden(post)} title={post.status === 'hidden' ? 'Unhide' : 'Hide'} className="px-2 py-1 bg-gray-800 rounded hover:bg-gray-700">
 												{post.status === 'hidden' ? <Eye size={14}/> : <EyeOff size={14}/>}

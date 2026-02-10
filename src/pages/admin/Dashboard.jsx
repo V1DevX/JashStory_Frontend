@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
 import api from "@/api";
-import { Loader2, FileText, Book, Users, TrendingUp, UserPlus, CheckCircle, Clock } from "lucide-react";
+import { Plus, Loader2, FileText, Book, Users, TrendingUp, UserPlus, CheckCircle, Clock } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [metrics, setMetrics] = useState({
     pageviews: "Loading...",
     monthlyUsers: "Loading...",
@@ -24,25 +23,35 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       try {
-        const [
-          pageviewsRes,
-          usersRes,
-          postsRes,
-          testsRes,
-        ] = await Promise.all([
-          api.get("/metrics/pageviews").catch(e => ({ data: { value: "N/A" } })),
-          api.get("/metrics/monthly-users").catch(e => ({ data: { value: "N/A" } })),
-          api.get("/posts/count").catch(e => ({ data: { count: "N/A" } })),
-          api.get("/tests/count").catch(e => ({ data: { count: "N/A" } })),
-        ]);
+        // const [
+        //   pageviewsRes,
+        //   usersRes,
+        //   postsRes,
+        //   testsRes,
+        // ] = await Promise.all([
+        //   api.get("/metrics/pageviews").catch(e => ({ data: { value: "N/A" } })),
+        //   api.get("/metrics/monthly-users").catch(e => ({ data: { value: "N/A" } })),
+        //   api.get("/posts/count").catch(e => ({ data: { count: "N/A" } })),
+        //   api.get("/tests/count").catch(e => ({ data: { count: "N/A" } })),
+        // ]);
 
-        setMetrics({
-          pageviews: pageviewsRes.data.value || "N/A",
-          monthlyUsers: usersRes.data.value || "N/A",
-          newSignups: "756", // Static for now
-          subscriptions: "2.3K", // Static for now
-          totalPosts: postsRes.data.count || "N/A",
-          totalTests: testsRes.data.count || "N/A",
+        // setMetrics({
+        //   pageviews: pageviewsRes.data.value || "N/A",
+        //   monthlyUsers: usersRes.data.value || "N/A",
+        //   newSignups: "756", // Static for now
+        //   subscriptions: "2.3K", // Static for now
+        //   totalPosts: postsRes.data.count || "N/A",
+        //   totalTests: testsRes.data.count || "N/A",
+        // });
+
+        console.log('Fetching dashboard - test mode');
+        setMetrics({ // Static for now
+          pageviews: "111.1K",
+          monthlyUsers: "11.1K",
+          newSignups: "111",
+          subscriptions: "1.1K",
+          totalPosts: "1.1K",
+          totalTests: "1.1K",
         });
       } catch (err) {
         console.error("Error fetching dashboard metrics:", err);
@@ -139,18 +148,26 @@ const Dashboard = () => {
 
           {/* Quick Actions */}
           <div className="flex flex-wrap justify-end gap-4 mt-8">
-            <Button onClick={() => navigate("/admin/posts/create")} className="flex items-center gap-2">
-              <Book className="w-5 h-5" />
-              Create New Post
-            </Button>
-            <Button onClick={() => navigate("/admin/tests/create")} className="flex items-center gap-2">
+            <Link
+              to={"editor"}
+              className="flex items-center gap-2 px-3 py-1 bg-green-600 rounded text-sm"
+            >
+              <Plus size={14}/> Create New Post
+            </Link>
+            {/* <Link 
+              to={"/admin/tests/create"} 
+              className="flex items-center gap-2"
+            >
               <FileText className="w-5 h-5" />
               Create New Test
-            </Button>
-            <Button onClick={() => navigate("/admin/users/create")} className="flex items-center gap-2">
+            </Link> */}
+            {/* <Link 
+              to={"/admin/users/create"}
+              className="flex items-center gap-2"
+            >
               <UserPlus className="w-5 h-5" />
               Add New User
-            </Button>
+            </Link> */}
           </div>
         </>
       )}

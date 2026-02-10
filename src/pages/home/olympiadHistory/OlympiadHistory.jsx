@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
@@ -63,9 +63,11 @@ const OlympiadHistory = () => {
         <p className="mt-2 font-sf font-light text-[15px] xl:text-base lg:font-normal text-center">
           {translations.text[language]}
         </p>
-        <button onClick={handleCatalogClick} className="mt-10 font-sf w-[200px] md:w-[234px] font-medium md:text-xl text-white px-[15px] py-[8px] border-white border-2 rounded-[24px]">
+        <Link
+          to={"/catalog"}
+          className="mt-10 font-sf text-center w-[200px] md:w-[234px] font-medium md:text-xl text-white px-[15px] py-[8px] border-white border-2 rounded-[24px]">
           {translations.allArticles[language]}
-        </button>
+        </Link>
       </div>
     </div>
   );

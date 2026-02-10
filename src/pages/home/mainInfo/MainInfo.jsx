@@ -1,14 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import style from "./MainInfo.module.css";
-import { useLanguage } from "../../../contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const MainInfo = () => {
-  const navigate = useNavigate();
   const { language } = useLanguage();
-
-  const handleCatalogClick = () => {
-    navigate("/catalog");
-  };
 
   const translations = {
     heading: {
@@ -36,14 +31,14 @@ const MainInfo = () => {
         </p>
 
         <div className="font-sfpro text-center flex flex-col sm:flex-row gap-[10px] md:gap-[20px] justify-center">
-          <button
-            onClick={handleCatalogClick}
+          <Link
+            to={"/catalog"}
             className="w-[200px] md:w-[234px] bg-[#CC67F8] font-medium md:text-xl text-white py-[8px] px-[10px] rounded-[24px]"
           >
-          {translations.viewCatalog[language]}
-          </button>
+            {translations.viewCatalog[language]}
+          </Link>
           <button className="w-[200px] md:w-[234px] font-medium md:text-xl text-white px-[15px] py-[8px] border-white border-2 rounded-[24px]">
-          {translations.learnMore[language]}
+            {translations.learnMore[language]}
           </button>
         </div>
       </div>
