@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import api from '@/api';
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import useDraftStore from "@/stores/draftStore";
 import * as Dialog from '@radix-ui/react-dialog';
