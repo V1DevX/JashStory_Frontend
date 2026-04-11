@@ -9,6 +9,13 @@ import { useLanguage } from "../../../contexts/LanguageContext";
 const Resources = () => {
   const { language } = useLanguage();
 
+  const images = {
+    babilontower: 'https://res.cloudinary.com/jskkegupo/image/upload/q_auto:best/v1771991827/source/main_babilontower.svg',
+    fallofrome:   'https://res.cloudinary.com/jskkegupo/image/upload/q_auto:best/v1771991878/source/main_fallofrome.svg',
+    napoleonwar:  'https://res.cloudinary.com/jskkegupo/image/upload/q_auto:best/v1771991951/source/main_napoleonwar.svg',
+    europe:       'https://res.cloudinary.com/jskkegupo/image/upload/q_auto:best/v1771991986/source/main_europe.svg',
+  }
+
   const { ref: imgRef, inView: imgInView } = useInView({
     triggerOnce: false,
     threshold: 0.1,
@@ -98,7 +105,7 @@ const Resources = () => {
         transition-opacity duration-700 ease-in-out 
         transform ${imgInView ? "opacity-100" : "opacity-0"}`}
         >
-          <img src={img} className="w-full h-full rounded-3xl" />
+          <img src={images.babilontower} className="w-full h-full rounded-3xl" />
         </div>
         <div
           ref={gridRef}
@@ -108,19 +115,19 @@ const Resources = () => {
         >
           <div className="row-span-1 col-span-2">
             <img
-              src={img1}
+              src={images.fallofrome}
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>
           <div className="row-span-1 col-span-1">
             <img
-              src={img2}
+              src={images.napoleonwar}
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>
           <div className="row-span-1 col-span-1">
             <img
-              src={img3}
+              src={images.europe}
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>

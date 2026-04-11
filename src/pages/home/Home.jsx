@@ -8,12 +8,14 @@ import img from "../../assets/image2.jpg"
 import OlympiadHistory from "./olympiadHistory/OlympiadHistory";
 import BestArticles from "./bestArticles/BestArticles";
 import Articles from "./articles/Articles";
+import TestStyle from "./TestStyle";
 
 const Home = () => {
 
   return (
     <>
       <Header />
+      <TestStyle />
       <MainInfo />
       <Resources />
       {/* <Articles /> */}

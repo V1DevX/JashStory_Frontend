@@ -16,7 +16,7 @@ const Catalog = () => {
 	const searchRef = useRef(null);
 	const [ searchQuery, setSearchQuery ] = useState("");
 	const [ currentPage, setCurrentPage ] = useState(1);
-	const itemsPerPage = 9;
+	const itemsPerPage = 16;
 	const { language } = useLanguage();
 
 	const fetchAllData = async () => {
@@ -149,7 +149,7 @@ const Catalog = () => {
 					<img src={search} alt="Search" />
 				</button>
 			</div>
-			<div className="m-4 md:m-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8">
+			<div className="m-4 md:m-10 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-8">
 				{loading ? (
 					<Loader />
 				) : (

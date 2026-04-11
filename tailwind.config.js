@@ -76,7 +76,7 @@ export default {
   			}
   		},
   		backgroundImage: {
-			'olymp-bg': "url('./assets/japanese-art 1.svg')",
+			'olymp-bg': "url('https://res.cloudinary.com/jskkegupo/image/upload/q_auto:best/v1771992974/source/main_japanese-art.svg')",
 			'login-bg': "url('./assets/authorization.jpg')"
 		  },
   		screens: {

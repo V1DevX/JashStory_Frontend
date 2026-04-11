@@ -1,20 +1,14 @@
 import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { useLanguage } from "../../../contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
 
 const OlympiadHistory = () => {
   const { language } = useLanguage();
-  const navigate = useNavigate()
 
   const { ref, inView } = useInView({
     triggerOnce: false,
     threshold: 0.1,
   });
-
-  const handleCatalogClick = () => {
-    navigate("/catalog")
-  }
 
   const translations = {
     olympiadHistory: {
