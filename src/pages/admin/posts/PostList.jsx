@@ -160,7 +160,7 @@ export default function PostList() {
 
 		try {
 			setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: newStatus } : p)));
-			await api.patch(`/posts/${id}`, { status: newStatus });
+			await api.put(`/posts/${id}`, { status: newStatus });
 		} catch (e) {
 			console.error("Status update failed", e);
 			setPosts(prevList => prevList.map(p => ((p._id || p.id) === id ? { ...p, status: prevStatus } : p)));

@@ -314,7 +314,7 @@ const PostEditor = () => {
           return;
         }
 
-        await api.put(`/posts/${postId}`, patch);
+        await api.put(`/posts/${postId}`, put);
 
         // Update snapshot so next save computes diff from new state
         initialDataRef.current = {
