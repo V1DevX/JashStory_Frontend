@@ -62,7 +62,12 @@ const Catalog = () => {
 		api.get("/tags", { params: { size: 200, lang: language } })
 			.then(res => {
 				const raw = res.data?.data;
-				setAllTags(Array.isArray(raw) ? raw : []);
+				const list = Array.isArray(raw) ? raw
+					: Array.isArray(raw?.tags)   ? raw.tags
+					: Array.isArray(raw?.docs)   ? raw.docs
+					: Array.isArray(raw?.items)  ? raw.items
+					: [];
+				setAllTags(list);
 			})
 			.catch(e => console.error("Tags load failed:", e));
 	}, [language]);

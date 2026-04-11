@@ -18,6 +18,7 @@ const StatusBadge = ({ status }) => {
 export default function TagList() {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
 
   // Фильтры
   const [q, setQ] = useState("");
@@ -32,15 +33,24 @@ export default function TagList() {
   // ─── Загрузка ───────────────────────────────
   const fetchTags = async () => {
     setLoading(true);
+    setFetchError("");
     try {
       const params = { size: 100 };
       if (q) params.q = q;
       if (typeFilter) params.type = typeFilter;
-      const res = await api.get("/tags", { params });
-      const raw = res.data?.data;
-      setTags(Array.isArray(raw) ? raw : []);
+      const res = await api.get("/tags", { params, timeout: 10000 });
+      if (res.status === 204 || !res.data) { setTags([]); return; }
+      const raw = res.data?.data ?? res.data;
+      const list = Array.isArray(raw) ? raw
+        : Array.isArray(raw?.tags)       ? raw.tags
+        : Array.isArray(raw?.categories) ? raw.categories
+        : Array.isArray(raw?.docs)       ? raw.docs
+        : Array.isArray(raw?.items)      ? raw.items
+        : [];
+      setTags(list);
     } catch (e) {
       console.error("Failed to load tags:", e);
+      setFetchError(e?.message || "Failed to load tags. Check backend.");
     } finally {
       setLoading(false);
     }
@@ -179,6 +189,8 @@ export default function TagList() {
           <tbody>
             {loading ? (
               <tr><td colSpan={5} className="p-6 text-center text-gray-500">Loading...</td></tr>
+            ) : fetchError ? (
+              <tr><td colSpan={5} className="p-6 text-center text-red-400">{fetchError}</td></tr>
             ) : filtered.length === 0 ? (
               <tr><td colSpan={5} className="p-6 text-center text-gray-500">No tags found</td></tr>
             ) : filtered.map(tag => (

@@ -2,15 +2,18 @@ import { useEffect, useState } from "react";
 import api from "@/api";
 import { Plus, Pencil, Trash2, RefreshCw, X, Check } from "lucide-react";
 
-const EMPTY_FORM = { title: "", desc: "" };
+const EMPTY_FORM = {
+  title: { en: "", ru: "", kg: "" },
+  desc: "",
+};
 
 export default function CategoryList() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   const [q, setQ] = useState("");
 
-  // Диалог
-  const [dialog, setDialog] = useState(null); // null | { mode: "create" | "edit", id? }
+  const [dialog, setDialog] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
@@ -18,14 +21,22 @@ export default function CategoryList() {
   // ─── Загрузка ───────────────────────────────
   const fetchCategories = async () => {
     setLoading(true);
+    setFetchError("");
     try {
       const params = { size: 100 };
       if (q) params.q = q;
-      const res = await api.get("/category", { params });
-      const raw = res.data?.data;
-      setCategories(Array.isArray(raw) ? raw : []);
+      const res = await api.get("/category", { params, timeout: 10000 });
+      if (res.status === 204 || !res.data) { setCategories([]); return; }
+      const raw = res.data?.data ?? res.data;
+      const list = Array.isArray(raw) ? raw
+        : Array.isArray(raw?.categories) ? raw.categories
+        : Array.isArray(raw?.docs)       ? raw.docs
+        : Array.isArray(raw?.items)      ? raw.items
+        : [];
+      setCategories(list);
     } catch (e) {
       console.error("Failed to load categories:", e);
+      setFetchError(e?.message || "Failed to load categories. Check backend.");
     } finally {
       setLoading(false);
     }
@@ -41,31 +52,45 @@ export default function CategoryList() {
   };
 
   const openEdit = (cat) => {
-    setForm({ title: cat.title || "", desc: cat.desc || "" });
+    const t = typeof cat.title === "object" && cat.title !== null ? cat.title : {};
+    setForm({
+      title: {
+        en: t.en || "",
+        ru: t.ru || "",
+        kg: t.kg || "",
+      },
+      desc: cat.desc || "",
+    });
     setFormError("");
     setDialog({ mode: "edit", id: cat._id });
   };
 
   const closeDialog = () => { setDialog(null); setFormError(""); };
 
+  const setTitleField = (lang, value) =>
+    setForm(f => ({ ...f, title: { ...f.title, [lang]: value } }));
+
   // ─── Сохранение ─────────────────────────────
   const handleSave = async () => {
-    if (!form.title.trim()) {
-      setFormError("Title is required");
+    if (!form.title.en.trim() || !form.title.ru.trim() || !form.title.kg.trim()) {
+      setFormError("Title EN, RU и KG — обязательные поля");
       return;
     }
     setSaving(true);
     setFormError("");
     try {
+      const payload = { title: form.title, desc: form.desc };
       if (dialog.mode === "create") {
-        await api.post("/category", { title: form.title, desc: form.desc });
+        await api.post("/category", payload);
       } else {
-        await api.put(`/category/${dialog.id}`, { title: form.title, desc: form.desc });
+        await api.put(`/category/${dialog.id}`, payload);
       }
       closeDialog();
       fetchCategories();
     } catch (e) {
-      const errMsg = e?.message || Object.values(e || {}).join(", ") || "Save failed";
+      const errMsg = e?.message
+        || (typeof e === "object" ? Object.values(e).join(", ") : null)
+        || "Save failed";
       setFormError(errMsg);
     } finally {
       setSaving(false);
@@ -74,7 +99,8 @@ export default function CategoryList() {
 
   // ─── Удаление ───────────────────────────────
   const handleDelete = async (cat) => {
-    if (!window.confirm(`Delete category "${cat.title}"? This is irreversible.`)) return;
+    const name = cat.title?.ru || cat.title?.en || cat._id;
+    if (!window.confirm(`Delete category "${name}"? This is irreversible.`)) return;
     try {
       setCategories(prev => prev.filter(c => c._id !== cat._id));
       await api.delete(`/category/${cat._id}`);
@@ -84,16 +110,22 @@ export default function CategoryList() {
     }
   };
 
-  const filtered = categories.filter(c =>
-    !q || c.title?.toLowerCase().includes(q.toLowerCase())
-  );
+  // ─── Фильтрация ─────────────────────────────
+  const filtered = categories.filter(c => {
+    if (!q) return true;
+    const ql = q.toLowerCase();
+    return (
+      c.title?.ru?.toLowerCase().includes(ql) ||
+      c.title?.en?.toLowerCase().includes(ql) ||
+      c.title?.kg?.toLowerCase().includes(ql)
+    );
+  });
 
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h2 className="text-2xl font-bold">Categories</h2>
-
         <div className="flex items-center gap-2">
           <input
             value={q}
@@ -116,7 +148,7 @@ export default function CategoryList() {
         <table className="w-full text-sm table-auto">
           <thead>
             <tr className="text-left text-xs text-gray-400 border-b border-gray-800">
-              <th className="p-2">Title</th>
+              <th className="p-2">Title (RU / EN)</th>
               <th className="p-2">Description</th>
               <th className="p-2 w-24 text-right">Actions</th>
             </tr>
@@ -124,11 +156,18 @@ export default function CategoryList() {
           <tbody>
             {loading ? (
               <tr><td colSpan={3} className="p-6 text-center text-gray-500">Loading...</td></tr>
+            ) : fetchError ? (
+              <tr><td colSpan={3} className="p-6 text-center text-red-400">{fetchError}</td></tr>
             ) : filtered.length === 0 ? (
               <tr><td colSpan={3} className="p-6 text-center text-gray-500">No categories found</td></tr>
             ) : filtered.map(cat => (
               <tr key={cat._id} className="border-b border-gray-800 hover:bg-gray-900">
-                <td className="p-2 font-medium">{cat.title}</td>
+                <td className="p-2">
+                  <div className="font-medium">{cat.title?.ru || cat.title?.en || "—"}</div>
+                  {cat.title?.ru && cat.title?.en && (
+                    <div className="text-xs text-gray-500">{cat.title.en}</div>
+                  )}
+                </td>
                 <td className="p-2 text-gray-400 text-sm">
                   <span className="line-clamp-1">{cat.desc || "—"}</span>
                 </td>
@@ -148,12 +187,12 @@ export default function CategoryList() {
         </table>
       </div>
 
-      {/* Диалог */}
+      {/* Диалог создания / редактирования */}
       {dialog && (
         <>
           <div className="fixed inset-0 bg-black/60 z-40" onClick={closeDialog} />
           <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-sm">
+            <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-md">
               <div className="flex items-center justify-between p-4 border-b border-gray-800">
                 <h3 className="text-lg font-semibold">
                   {dialog.mode === "create" ? "New Category" : "Edit Category"}
@@ -163,17 +202,28 @@ export default function CategoryList() {
                 </button>
               </div>
 
-              <div className="p-4 space-y-4">
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wide">Title *</label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                    placeholder="Category title"
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:border-violet-500 focus:outline-none"
-                  />
-                </div>
+              <div className="p-4 space-y-3">
+                {/* Title по языкам */}
+                {[
+                  { lang: "en", label: "Title EN", required: true },
+                  { lang: "ru", label: "Title RU", required: true },
+                  { lang: "kg", label: "Title KG", required: true },
+                ].map(({ lang, label, required }) => (
+                  <div key={lang}>
+                    <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wide">
+                      {label} {required && "*"}
+                    </label>
+                    <input
+                      type="text"
+                      value={form.title[lang]}
+                      onChange={e => setTitleField(lang, e.target.value)}
+                      placeholder={label}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:border-violet-500 focus:outline-none"
+                    />
+                  </div>
+                ))}
+
+                {/* Description */}
                 <div>
                   <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wide">Description</label>
                   <textarea
@@ -184,6 +234,7 @@ export default function CategoryList() {
                     className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm focus:border-violet-500 focus:outline-none resize-none"
                   />
                 </div>
+
                 {formError && <p className="text-red-400 text-sm">{formError}</p>}
               </div>
 
