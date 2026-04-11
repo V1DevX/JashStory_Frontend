@@ -15,7 +15,7 @@ const Home = () => {
   return (
     <>
       <Header />
-      <TestStyle />
+      {/* <TestStyle /> */}
       <MainInfo />
       <Resources />
       {/* <Articles /> */}
