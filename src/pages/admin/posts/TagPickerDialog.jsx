@@ -148,7 +148,7 @@ const CreateTagForm = ({ onCreated }) => {
                     onClick={() => set("type", t)}
                     className={`px-2.5 py-1 rounded-full text-xs border transition-all ${
                       form.type === t
-                        ? c.filter + " ring-1 ring-offset-1 ring-offset-gray-900"
+                        ? c.filter + "text-white ring-1 ring-offset-1 ring-offset-gray-900"
                         : "bg-gray-800 text-gray-400 border-gray-700 hover:border-gray-600"
                     }`}
                   >
@@ -160,7 +160,7 @@ const CreateTagForm = ({ onCreated }) => {
           </div>
 
           {/* Names */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="text-white grid grid-cols-3 gap-2">
             {[["ru", "Рус"], ["en", "Eng"], ["kg", "Кырг"]].map(([lang, label]) => (
               <div key={lang}>
                 <label className="text-xs text-gray-500 mb-1 block">{label}</label>
@@ -242,7 +242,7 @@ const TagPickerDialog = ({ selectedTags, allTags, onTagsChange, onTagCreated, la
       {/* ── Dialog ── */}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[85vh] flex flex-col bg-[#0f0f0f] border border-gray-800 rounded-xl shadow-2xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
+        <Dialog.Content className="text-white fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[85vh] flex flex-col bg-[#0f0f0f] border border-gray-800 rounded-xl shadow-2xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
 
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800 flex-shrink-0">
