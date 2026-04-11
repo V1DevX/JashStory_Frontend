@@ -314,7 +314,7 @@ const PostEditor = () => {
           return;
         }
 
-        await api.put(`/posts/${postId}`, put);
+        await api.put(`/posts/${postId}`, patch);
 
         // Update snapshot so next save computes diff from new state
         initialDataRef.current = {
@@ -518,7 +518,7 @@ const PostEditor = () => {
           />
           {/* Selected tags strip */}
           {selectedTags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-0.5">
+            <div className="text-gray-400 flex flex-wrap gap-1.5 mt-0.5">
               {selectedTags.map((tag) => (
                 <TagChip
                   key={tag._id || tag}
