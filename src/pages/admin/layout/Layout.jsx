@@ -7,7 +7,9 @@ import {
   Users,
   FileText,
   Book,
-	BookType,
+  BookType,
+  Tag,
+  FolderOpen,
   Settings,
   LogOut,
   PlusCircle,
@@ -55,11 +57,13 @@ const CustomBreadcrumb = ({ breadcrumbs }) => (
 );
 
 const sideNavList = [
-  { text: "Dashboard", url: "/admin/dashboard", icon: <Home className="w-5 h-5" /> },
-  { text: "Posts", url: "/admin/posts", icon: <BookType className="w-5 h-5" /> },
-  { text: "Tests", url: "/admin/tests", icon: <FileText className="w-5 h-5" /> },
-  { text: "Users", url: "/admin/users", icon: <Users className="w-5 h-5" /> },
-  { text: "Settings", url: "/admin/settings", icon: <Settings className="w-5 h-5" /> },
+  { text: "Dashboard",  url: "/admin/dashboard",  icon: <Home       className="w-5 h-5" /> },
+  { text: "Posts",      url: "/admin/posts",       icon: <BookType   className="w-5 h-5" /> },
+  { text: "Tags",       url: "/admin/tags",        icon: <Tag        className="w-5 h-5" /> },
+  { text: "Categories", url: "/admin/categories",  icon: <FolderOpen className="w-5 h-5" /> },
+  { text: "Tests",      url: "/admin/tests",       icon: <FileText   className="w-5 h-5" /> },
+  { text: "Users",      url: "/admin/users",       icon: <Users      className="w-5 h-5" /> },
+  { text: "Settings",   url: "/admin/settings",    icon: <Settings   className="w-5 h-5" /> },
 ];
 
 const AdminLayout = () => {

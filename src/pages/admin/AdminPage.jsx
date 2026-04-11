@@ -6,7 +6,6 @@ import Dashboard from "./Dashboard";
 // 📚	Posts
 import PostList from "./posts/PostList";
 import PostEditor from "./posts/PostEditor";
-// import PostView from "./posts/PostView"; // Dashboard: views, ratings, comments, etc.
 
 //   	Tests
 import TestList from "./tests/TestList";
@@ -14,6 +13,10 @@ import TestEditor from "./tests/TestEditor";
 
 // 👥	Users
 import UserList from "./users/UserList";
+
+// 🏷️	Tags & Categories
+import TagList from "./tags/TagList";
+import CategoryList from "./categories/CategoryList";
 
 const AdminPage = () => {
 	return (
@@ -31,6 +34,12 @@ const AdminPage = () => {
 			</Route>
 			<Route path="users">
 				<Route index element={<UserList />}/>
+			</Route>
+			<Route path="tags">
+				<Route index element={<TagList />}/>
+			</Route>
+			<Route path="categories">
+				<Route index element={<CategoryList />}/>
 			</Route>
 			<Route path="*" element={
 					<div className="w-[100%] h-[100%] flex justify-center items-center">
